@@ -8,8 +8,11 @@ function Footer() {
         {/* Info Brand Column */}
         <div style={infoColStyle}>
           <div style={logoStyle}>
-            <Crown size={24} style={{ color: 'var(--primary-gold)' }} />
-            <span style={logoTextStyle}>금막창</span>
+            <img 
+              src="/geummakchang_logo.png" 
+              alt="금막창 로고" 
+              style={{ height: '38px', objectFit: 'contain', display: 'block', filter: 'brightness(0) invert(1)' }} 
+            />
           </div>
           <p style={descStyle}>
             황금빛 불판 위에서 피어나는 최고급 전통 직화 구이.<br />

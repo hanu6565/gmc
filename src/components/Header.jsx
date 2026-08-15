@@ -15,8 +15,11 @@ function Header({ openAuth, isLoggedIn, userEmail, handleLogout }) {
       <div style={containerStyle}>
         {/* Logo */}
         <Link to="/" style={logoStyle}>
-          <Crown size={24} style={{ color: 'var(--primary-gold)' }} />
-          <span style={logoTextStyle}>금막창</span>
+          <img 
+            src="/geummakchang_logo.png" 
+            alt="금막창 로고" 
+            style={{ height: '42px', objectFit: 'contain', display: 'block' }} 
+          />
         </Link>
 
         {/* Navigation Links */}
