@@ -437,51 +437,27 @@ function Home({ openAuth, isLoggedIn, userEmail, handleLogout }) {
               </div>
             </div>
 
-            {/* Story Right: 4 reasons proving taste */}
-            <div style={storyRightStyle}>
-              <p style={{ fontSize: '0.85rem', color: '#cbd5e1', textAlign: 'center', letterSpacing: '0.05em', marginBottom: '0.25rem' }}>
-                맛있는 막창은 기본입니다
-              </p>
-              <h3 style={sauceTitleStyle}>금막창이 맛을 증명하는 4가지</h3>
-              <div style={{ width: '40px', height: '2px', backgroundColor: 'var(--primary-gold)', margin: '0.75rem auto 1.5rem' }}></div>
-
-              <div style={saucesFlexStyle}>
-                {/* Step 1 */}
-                <div className="card-premium" style={stepCardStyle}>
-                  <span style={stepBadgeStyle}>STEP 1</span>
-                  <h4 style={stepTitleStyle}>특허받은 누룩숙성</h4>
-                  <p style={stepDescStyle}>
-                    깊은 풍미의 비결은<br />누룩명인의 저온 숙성 기술
-                  </p>
-                </div>
-
-                {/* Step 2 */}
-                <div className="card-premium" style={stepCardStyle}>
-                  <span style={stepBadgeStyle}>STEP 2</span>
-                  <h4 style={stepTitleStyle}>맞춤형 부위 손질</h4>
-                  <p style={stepDescStyle}>
-                    동글막창은 부드럽고 촉촉하게,<br />넙적막창은 고소하고 쫄깃하게
-                  </p>
-                </div>
-
-                {/* Step 3 */}
-                <div className="card-premium" style={stepCardStyle}>
-                  <span style={stepBadgeStyle}>STEP 3</span>
-                  <h4 style={stepTitleStyle}>시그니처 소스 3종</h4>
-                  <p style={stepDescStyle}>
-                    막창의 풍미를 끌어올리는<br />금막창만의 비법
-                  </p>
-                </div>
-
-                {/* Step 4 */}
-                <div className="card-premium" style={stepCardStyle}>
-                  <span style={stepBadgeStyle}>STEP 4</span>
-                  <h4 style={stepTitleStyle}>온도의 결을 살리는 불판</h4>
-                  <p style={stepDescStyle}>
-                    겉은 바삭하게,<br />속은 촉촉하게 완성됩니다.
-                  </p>
-                </div>
-              </div>
+            {/* Story Right: Brand banner image */}
+            <div style={{
+              flex: '1 1 450px',
+              borderRadius: '16px',
+              overflow: 'hidden',
+              boxShadow: 'var(--shadow-lg)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              backgroundColor: 'var(--bg-dark)'
+            }}>
+              <img 
+                src="/geummakchang_proof.jpg" 
+                alt="금막창이 맛을 증명하는 4가지" 
+                style={{
+                  width: '100%',
+                  height: '100%',
+                  objectFit: 'cover',
+                  display: 'block'
+                }} 
+              />
             </div>
           </div>
         </div>
