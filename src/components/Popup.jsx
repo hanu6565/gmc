@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { X } from 'lucide-react';
 import { supabase } from '../utils/supabase';
+import DbImage from './DbImage';
 
 function Popup() {
   const [activePopups, setActivePopups] = useState([]);
@@ -128,7 +129,20 @@ function Popup() {
           <div key={popup.id} style={popupBoxStyle} className="animate-fade-in">
             {/* Popup Image */}
             {popup.image && (
-              <div style={popupImageAreaStyle(popup.image)}></div>
+              <div style={{
+                width: '100%',
+                height: '190px',
+                backgroundColor: 'var(--bg-secondary)',
+                borderBottom: '1px solid var(--border-color)',
+                overflow: 'hidden',
+                position: 'relative'
+              }}>
+                <DbImage 
+                  src={popup.image} 
+                  alt={popup.title} 
+                  style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
+                />
+              </div>
             )}
             
             {/* Popup Body */}

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { ToggleLeft, ToggleRight, Calendar, Eye, Save, Trash2, Plus } from 'lucide-react';
 import { supabase } from '../../utils/supabase';
+import DbImage from '../DbImage';
 
 function PopupTab() {
   const [popups, setPopups] = useState([]);
@@ -179,21 +180,81 @@ function PopupTab() {
             <div style={formGridStyle}>
               {/* Image URL Input & Preview */}
               <div style={{ flex: '1 1 250px', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-                <div style={imagePreviewStyle(popup.image)}></div>
-                <div style={inputGroupStyle}>
-                  <label style={labelStyle}>팝업 이미지 URL</label>
-                  <input 
-                    type="text" 
-                    value={popup.image}
-                    onChange={(e) => {
-                      const updated = [...popups];
-                      updated[idx].image = e.target.value;
-                      setPopups(updated);
-                    }}
-                    placeholder="https://example.com/image.jpg"
-                    style={inputStyle}
-                  />
-                </div>
+                 <div style={{
+                   width: '100%',
+                   height: '180px',
+                   backgroundColor: 'var(--bg-secondary)',
+                   borderRadius: '8px',
+                   border: '1px solid var(--border-color)',
+                   overflow: 'hidden',
+                   position: 'relative',
+                   minWidth: '200px'
+                 }}>
+                   <DbImage 
+                     src={popup.image} 
+                     alt={popup.title} 
+                     style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
+                   />
+                 </div>
+                 <div style={inputGroupStyle}>
+                   <label style={labelStyle}>팝업 이미지 URL</label>
+                   <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+                     <input 
+                       type="text" 
+                       value={popup.image}
+                       onChange={(e) => {
+                         const updated = [...popups];
+                         updated[idx].image = e.target.value;
+                         setPopups(updated);
+                       }}
+                       placeholder="https://example.com/image.jpg"
+                       style={{ ...inputStyle, flexGrow: 1 }}
+                     />
+                     <label style={{
+                       padding: '0.7rem 0.9rem',
+                       backgroundColor: 'var(--primary-gold-light)',
+                       color: 'var(--primary-gold-hover)',
+                       borderRadius: '6px',
+                       fontSize: '0.85rem',
+                       fontWeight: '700',
+                       cursor: 'pointer',
+                       display: 'flex',
+                       alignItems: 'center',
+                       gap: '0.25rem',
+                       border: '1px solid var(--primary-gold)',
+                       flexShrink: 0
+                     }}>
+                       <span>업로드</span>
+                       <input 
+                         type="file" 
+                         accept="image/*" 
+                         onChange={async (e) => {
+                           const file = e.target.files[0];
+                           if (!file) return;
+                           if (file.size > 15 * 1024 * 1024) {
+                             alert('이미지 크기는 15MB 이하로 선택해 주세요.');
+                             return;
+                           }
+                           try {
+                             const { saveAsset } = await import('../../utils/db');
+                             const key = `popup_image_${popup.id}`;
+                             await saveAsset(key, file);
+                             
+                             const updated = [...popups];
+                             updated[idx].image = `indexeddb:${key}`;
+                             setPopups(updated);
+                             
+                             localStorage.setItem('geummakchang_popups', JSON.stringify(updated));
+                           } catch (err) {
+                             console.error('Error uploading popup image:', err);
+                             alert('이미지 저장 중 오류가 발생했습니다.');
+                           }
+                         }}
+                         style={{ display: 'none' }}
+                       />
+                     </label>
+                   </div>
+                 </div>
               </div>
 
               {/* Text Fields */}
