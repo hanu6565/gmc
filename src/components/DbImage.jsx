@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { getAsset } from '../utils/db';
 
 function DbImage({ src, alt, style, className }) {
   const [localUrl, setLocalUrl] = useState('');
@@ -6,13 +7,11 @@ function DbImage({ src, alt, style, className }) {
   useEffect(() => {
     if (src && src.startsWith('indexeddb:')) {
       const key = src.replace('indexeddb:', '');
-      import('../utils/db').then(({ getAsset }) => {
-        getAsset(key).then(blob => {
-          if (blob) {
-            const url = URL.createObjectURL(blob);
-            setLocalUrl(url);
-          }
-        });
+      getAsset(key).then(blob => {
+        if (blob) {
+          const url = URL.createObjectURL(blob);
+          setLocalUrl(url);
+        }
       });
     } else {
       setLocalUrl('');

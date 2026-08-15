@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Video, Type, Grid, Award, MapPin, Plus, Trash2, ArrowUp, ArrowDown, Save, AlertTriangle } from 'lucide-react';
 import { supabase } from '../../utils/supabase';
 import DbImage from '../DbImage';
+import { saveAsset, getAsset } from '../../utils/db';
 
 function ContentTab() {
   const [activeSubTab, setActiveSubTab] = useState('hero');
@@ -49,13 +50,11 @@ function ContentTab() {
   // Load preview video from IndexedDB if active
   useEffect(() => {
     if (config && config.hero.videoType === 'file' && config.hero.videoUrl === 'indexeddb:hero_video') {
-      import('../../utils/db').then(({ getAsset }) => {
-        getAsset('hero_video').then(blob => {
-          if (blob) {
-            const localUrl = URL.createObjectURL(blob);
-            setPreviewVideoUrl(localUrl);
-          }
-        });
+      getAsset('hero_video').then(blob => {
+        if (blob) {
+          const localUrl = URL.createObjectURL(blob);
+          setPreviewVideoUrl(localUrl);
+        }
       });
     } else {
       setPreviewVideoUrl('');
@@ -73,7 +72,6 @@ function ContentTab() {
 
     setUploadStatus('동영상을 임시 데이터베이스에 업로드하는 중...');
     try {
-      const { saveAsset } = await import('../../utils/db');
       await saveAsset('hero_video', file);
       const updated = {
         ...config,
@@ -548,7 +546,6 @@ function ContentTab() {
                               return;
                             }
                             try {
-                              const { saveAsset } = await import('../../utils/db');
                               const key = `menu_image_${menu.id}`;
                               await saveAsset(key, file);
                               
@@ -943,7 +940,6 @@ function ContentTab() {
                                 return;
                               }
                               try {
-                                const { saveAsset } = await import('../../utils/db');
                                 const key = `event_image_${event.id}`;
                                 await saveAsset(key, file);
                                 

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { ToggleLeft, ToggleRight, Calendar, Eye, Save, Trash2, Plus } from 'lucide-react';
 import { supabase } from '../../utils/supabase';
 import DbImage from '../DbImage';
+import { saveAsset } from '../../utils/db';
 
 function PopupTab() {
   const [popups, setPopups] = useState([]);
@@ -236,7 +237,6 @@ function PopupTab() {
                              return;
                            }
                            try {
-                             const { saveAsset } = await import('../../utils/db');
                              const key = `popup_image_${popup.id}`;
                              await saveAsset(key, file);
                              
