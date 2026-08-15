@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Video, Type, Grid, Award, MapPin, Plus, Trash2, ArrowUp, ArrowDown, Save, AlertTriangle } from 'lucide-react';
 import { supabase } from '../../utils/supabase';
+import DbImage from '../DbImage';
 
 function ContentTab() {
   const [activeSubTab, setActiveSubTab] = useState('hero');
@@ -431,7 +432,22 @@ function ContentTab() {
             <div style={menuListWrapperStyle}>
               {config.menus.map((menu, idx) => (
                 <div key={menu.id} style={menuItemCardStyle}>
-                  <div style={menuImagePreviewStyle(menu.image)}></div>
+                  <div style={{
+                    width: '120px',
+                    height: '120px',
+                    borderRadius: '6px',
+                    backgroundColor: 'var(--bg-secondary)',
+                    flexShrink: 0,
+                    border: '1px solid var(--border-color)',
+                    overflow: 'hidden',
+                    position: 'relative'
+                  }}>
+                    <DbImage 
+                      src={menu.image} 
+                      alt={menu.title} 
+                      style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
+                    />
+                  </div>
                   <div style={{ flexGrow: 1, display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                       <input 
@@ -476,17 +492,62 @@ function ContentTab() {
                       </div>
                     </div>
 
-                    <input 
-                      type="text" 
-                      value={menu.image} 
-                      onChange={(e) => {
-                        const updated = [...config.menus];
-                        updated[idx].image = e.target.value;
-                        setConfig({ ...config, menus: updated });
-                      }}
-                      placeholder="이미지 주소(URL)"
-                      style={{ ...inputStyle, fontSize: '0.8rem', padding: '0.4rem 0.6rem' }}
-                    />
+                    <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+                      <input 
+                        type="text" 
+                        value={menu.image} 
+                        onChange={(e) => {
+                          const updated = [...config.menus];
+                          updated[idx].image = e.target.value;
+                          setConfig({ ...config, menus: updated });
+                        }}
+                        placeholder="이미지 주소(URL)"
+                        style={{ ...inputStyle, fontSize: '0.8rem', padding: '0.4rem 0.6rem', flexGrow: 1 }}
+                      />
+                      <label style={{
+                        padding: '0.4rem 0.75rem',
+                        backgroundColor: 'var(--primary-gold-light)',
+                        color: 'var(--primary-gold-hover)',
+                        borderRadius: '4px',
+                        fontSize: '0.75rem',
+                        fontWeight: '700',
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '0.25rem',
+                        border: '1px solid var(--primary-gold)',
+                        flexShrink: 0
+                      }}>
+                        <span>업로드</span>
+                        <input 
+                          type="file" 
+                          accept="image/*" 
+                          onChange={async (e) => {
+                            const file = e.target.files[0];
+                            if (!file) return;
+                            if (file.size > 15 * 1024 * 1024) {
+                              alert('이미지 크기는 15MB 이하로 선택해 주세요.');
+                              return;
+                            }
+                            try {
+                              const { saveAsset } = await import('../../utils/db');
+                              const key = `menu_image_${menu.id}`;
+                              await saveAsset(key, file);
+                              
+                              const updated = [...config.menus];
+                              updated[idx].image = `indexeddb:${key}`;
+                              setConfig({ ...config, menus: updated });
+                              
+                              localStorage.setItem('geummakchang_config', JSON.stringify({ ...config, menus: updated }));
+                            } catch (err) {
+                              console.error('Error uploading menu image:', err);
+                              alert('이미지 저장 중 오류가 발생했습니다.');
+                            }
+                          }}
+                          style={{ display: 'none' }}
+                        />
+                      </label>
+                    </div>
 
                     <textarea 
                       value={menu.desc} 

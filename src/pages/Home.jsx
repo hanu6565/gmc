@@ -5,6 +5,7 @@ import Popup from '../components/Popup';
 import { Calendar, Users, Phone, User, MapPin, Star, ChevronLeft, ChevronRight, Award, Plus, Layers, Flame, BookOpen, Heart } from 'lucide-react';
 import { getAsset } from '../utils/db';
 import { supabase } from '../utils/supabase';
+import DbImage from '../components/DbImage';
 
 function Home({ openAuth, isLoggedIn, userEmail, handleLogout }) {
   const [config, setConfig] = useState(null);
@@ -334,7 +335,7 @@ function Home({ openAuth, isLoggedIn, userEmail, handleLogout }) {
                     }}
                   >
                     <div style={menuImageWrapperStyle}>
-                      <img src={menu.image} alt={menu.title} style={menuImgStyle} />
+                      <DbImage src={menu.image} alt={menu.title} style={menuImgStyle} />
                       <div style={menuOverlayHoverStyle}>
                         <span>상세 아코디언 {isOpen ? '접기' : '펼치기'}</span>
                       </div>
