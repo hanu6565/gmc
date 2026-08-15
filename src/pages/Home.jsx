@@ -635,7 +635,18 @@ function Home({ openAuth, isLoggedIn, userEmail, handleLogout }) {
                 .filter(e => e.status === activeEventTab)
                 .map((event) => (
                   <div key={event.id} className="card-premium hover-gold-grow" style={eventCardStyle}>
-                    <div style={eventCardImgAreaStyle(event.image)}>
+                    <div style={{
+                      width: '100%',
+                      height: '200px',
+                      position: 'relative',
+                      backgroundColor: 'var(--bg-secondary)',
+                      overflow: 'hidden'
+                    }}>
+                      <DbImage 
+                        src={event.image} 
+                        alt={event.title} 
+                        style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
+                      />
                       <span style={eventCardBadgeStyle}>GIVEAWAY (증정)</span>
                     </div>
                     <div style={eventCardBodyStyle}>
