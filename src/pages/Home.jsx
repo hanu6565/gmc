@@ -481,9 +481,9 @@ function Home({ openAuth, isLoggedIn, userEmail, handleLogout }) {
         <div style={sectionContainerStyle}>
           <div style={{ textAlign: 'center', marginBottom: '3.5rem' }}>
             <span style={sectionTagStyle}>매장 안내</span>
-            <h2 style={sectionTitleStyle}>금막창 지점 및 위치 찾기</h2>
+            <h2 style={sectionTitleStyle}>금막창 지점 안내</h2>
             <p style={sectionDescStyle}>
-              직접 매장을 방문하시어 참숯 향이 밴 누룩숙성 막창의 진짜 맛을 느껴보세요.
+              누룩소금 숙성막창의 진짜 맛을 느껴보세요.
             </p>
           </div>
 
