@@ -5,6 +5,8 @@ function ContentTab() {
   const [activeSubTab, setActiveSubTab] = useState('hero');
   const [config, setConfig] = useState(null);
   const [validationError, setValidationError] = useState('');
+  const [uploadStatus, setUploadStatus] = useState('');
+  const [previewVideoUrl, setPreviewVideoUrl] = useState('');
 
   // Default config initializer
   useEffect(() => {
@@ -19,6 +21,55 @@ function ContentTab() {
       initializeDefaultConfig();
     }
   }, []);
+
+  // Load preview video from IndexedDB if active
+  useEffect(() => {
+    if (config && config.hero.videoType === 'file' && config.hero.videoUrl === 'indexeddb:hero_video') {
+      import('../../utils/db').then(({ getAsset }) => {
+        getAsset('hero_video').then(blob => {
+          if (blob) {
+            const localUrl = URL.createObjectURL(blob);
+            setPreviewVideoUrl(localUrl);
+          }
+        });
+      });
+    } else {
+      setPreviewVideoUrl('');
+    }
+  }, [config]);
+
+  const handleVideoUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    if (file.size > 100 * 1024 * 1024) {
+      alert('동영상 크기가 너무 큽니다. 100MB 이하의 동영상을 업로드해 주세요.');
+      return;
+    }
+
+    setUploadStatus('동영상을 임시 데이터베이스에 업로드하는 중...');
+    try {
+      const { saveAsset } = await import('../../utils/db');
+      await saveAsset('hero_video', file);
+      const updated = {
+        ...config,
+        hero: {
+          ...config.hero,
+          videoType: 'file',
+          videoUrl: 'indexeddb:hero_video'
+        }
+      };
+      setConfig(updated);
+      localStorage.setItem('geummakchang_config', JSON.stringify(updated));
+      setUploadStatus('업로드 완료! 홈페이지 메인 및 아래 미리보기에 즉시 적용됩니다.');
+      
+      const localUrl = URL.createObjectURL(file);
+      setPreviewVideoUrl(localUrl);
+    } catch (err) {
+      console.error(err);
+      setUploadStatus('업로드 실패. 다시 시도해 주세요.');
+    }
+  };
 
   const initializeDefaultConfig = () => {
     const defaultData = {
@@ -227,6 +278,40 @@ function ContentTab() {
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                     allowFullScreen
                   ></iframe>
+                </div>
+              )}
+              {config.hero.videoType === 'file' && (
+                <div style={{ marginTop: '0.5rem' }}>
+                  <label style={{ ...labelStyle, display: 'block', marginBottom: '0.5rem' }}>동영상 파일 직접 업로드 (100MB 이하 MP4)</label>
+                  <input 
+                    type="file" 
+                    accept="video/mp4,video/*" 
+                    onChange={handleVideoUpload}
+                    style={{
+                      padding: '0.5rem',
+                      border: '1px dashed var(--primary-gold)',
+                      borderRadius: '6px',
+                      width: '100%',
+                      cursor: 'pointer',
+                      backgroundColor: 'var(--bg-primary)'
+                    }}
+                  />
+                  {uploadStatus && (
+                    <p style={{ fontSize: '0.85rem', color: 'var(--primary-gold-hover)', marginTop: '0.5rem', fontWeight: '700' }}>
+                      {uploadStatus}
+                    </p>
+                  )}
+                  {previewVideoUrl && (
+                    <div style={previewBoxStyle}>
+                      <p style={previewTitleStyle}>업로드 완료 비디오 미리보기</p>
+                      <video
+                        src={previewVideoUrl}
+                        controls
+                        muted
+                        style={{ width: '100%', maxHeight: '180px', borderRadius: '8px', marginTop: '0.5rem', backgroundColor: '#000' }}
+                      />
+                    </div>
+                  )}
                 </div>
               )}
             </div>

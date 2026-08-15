@@ -10,6 +10,7 @@ function Home({ openAuth, isLoggedIn, userEmail, handleLogout }) {
   const [selectedStoreIndex, setSelectedStoreIndex] = useState(0); // Multi-store tab index
   const [reviewIndex, setReviewIndex] = useState(0); // Review slider index
   const [activeEventTab, setActiveEventTab] = useState('ongoing'); // 'ongoing' or 'ended'
+  const [indexedVideoUrl, setIndexedVideoUrl] = useState('');
   
   // Franchise form state
   const [franchiseForm, setFranchiseForm] = useState({ name: '', phone: '', location: '' });
@@ -117,9 +118,42 @@ function Home({ openAuth, isLoggedIn, userEmail, handleLogout }) {
         setConfig(JSON.parse(savedConfig));
       }
     };
+
+    // Fast local polling interval for same-tab updates or page transition synchronizations
+    const interval = setInterval(() => {
+      const savedConfig = localStorage.getItem('geummakchang_config');
+      if (savedConfig) {
+        try {
+          const parsed = JSON.parse(savedConfig);
+          if (JSON.stringify(parsed) !== JSON.stringify(config)) {
+            setConfig(parsed);
+          }
+        } catch (err) {}
+      }
+    }, 1000);
+
     window.addEventListener('storage', handleStorageChange);
-    return () => window.removeEventListener('storage', handleStorageChange);
-  }, []);
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      clearInterval(interval);
+    };
+  }, [config]);
+
+  // Load preview video from IndexedDB if active
+  useEffect(() => {
+    if (config && config.hero.videoType === 'file' && config.hero.videoUrl === 'indexeddb:hero_video') {
+      import('../utils/db').then(({ getAsset }) => {
+        getAsset('hero_video').then(blob => {
+          if (blob) {
+            const localUrl = URL.createObjectURL(blob);
+            setIndexedVideoUrl(localUrl);
+          }
+        });
+      });
+    } else {
+      setIndexedVideoUrl('');
+    }
+  }, [config]);
 
   // Helper to extract YouTube ID
   const getYoutubeId = (url) => {
@@ -207,8 +241,9 @@ function Home({ openAuth, isLoggedIn, userEmail, handleLogout }) {
             playsInline
             style={videoBackgroundElementStyle}
             poster="/geummakchang_main.png"
+            key={indexedVideoUrl || config.hero.videoUrl}
           >
-            <source src={config.hero.videoUrl} type="video/mp4" />
+            <source src={indexedVideoUrl || config.hero.videoUrl} type="video/mp4" />
           </video>
         )}
 
