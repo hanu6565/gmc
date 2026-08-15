@@ -1,0 +1,174 @@
+:root {
+  /* Warm Tone Premium Color Palette */
+  --bg-primary: #fdfbf7;      /* Milk Cream (Very light, warm) */
+  --bg-secondary: #f4efe6;    /* Sand Beige (Soft, warm) */
+  --bg-dark: #1f1815;         /* Deep Roast Espresso (For dark sections) */
+  --bg-card: #ffffff;
+  --bg-card-dark: #2a201c;
+  
+  --primary-gold: #c5a880;    /* Muted Gold */
+  --primary-gold-hover: #b38f5c;
+  --primary-gold-light: #f5eedf;
+  
+  --text-dark: #2c221e;       /* Deep Charcoal Brown */
+  --text-muted: #6d5f5a;      /* Soft Muted Clay */
+  --text-light: #ffffff;
+  --text-light-muted: #e6dfd9;
+  
+  --accent-color: #e07a5f;    /* Terracotta Orange (Warm point) */
+  --border-color: #e6dfd9;
+  --border-color-dark: #3a2e29;
+  
+  --font-main: 'Noto Sans KR', sans-serif;
+  --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  --shadow-sm: 0 2px 8px rgba(44, 34, 30, 0.05);
+  --shadow-md: 0 8px 24px rgba(44, 34, 30, 0.08);
+  --shadow-lg: 0 16px 40px rgba(44, 34, 30, 0.12);
+}
+
+/* Reset & Base Styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: var(--font-main);
+  background-color: var(--bg-primary);
+  color: var(--text-dark);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+button, input, select, textarea {
+  font-family: inherit;
+}
+
+/* Scrollbar Customization */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-primary);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--primary-gold);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--primary-gold-hover);
+}
+
+/* Fade-in transitions and visual utility classes */
+.hover-gold-grow {
+  transition: var(--transition-smooth);
+}
+.hover-gold-grow:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-md);
+  border-color: var(--primary-gold);
+}
+
+/* Grid Layout for Admin Dashboard */
+.admin-grid {
+  display: grid;
+  gap: 1.5rem;
+}
+
+/* Base Card Styling */
+.card-premium {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: var(--shadow-sm);
+  transition: var(--transition-smooth);
+}
+
+.card-premium:hover {
+  box-shadow: var(--shadow-md);
+}
+
+/* Buttons styling */
+.btn-gold {
+  background-color: var(--primary-gold);
+  color: var(--text-light);
+  border: none;
+  border-radius: 6px;
+  padding: 0.6rem 1.2rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: var(--transition-smooth);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.btn-gold:hover {
+  background-color: var(--primary-gold-hover);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(197, 168, 128, 0.4);
+}
+
+.btn-outline-gold {
+  background: transparent;
+  color: var(--primary-gold);
+  border: 1px solid var(--primary-gold);
+  border-radius: 6px;
+  padding: 0.6rem 1.2rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: var(--transition-smooth);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.btn-outline-gold:hover {
+  background-color: var(--primary-gold-light);
+  color: var(--primary-gold-hover);
+}
+
+.btn-dark {
+  background-color: var(--bg-dark);
+  color: var(--text-light);
+  border: 1px solid var(--border-color-dark);
+  border-radius: 6px;
+  padding: 0.6rem 1.2rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: var(--transition-smooth);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.btn-dark:hover {
+  background-color: var(--text-dark);
+  transform: translateY(-1px);
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.5s ease forwards;
+}
