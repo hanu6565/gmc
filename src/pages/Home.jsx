@@ -58,20 +58,20 @@ function Home({ openAuth, isLoggedIn, userEmail, handleLogout }) {
       {
         id: 2,
         name: '월성점',
-        address: '대구광역시 달서구 조암로 38',
+        address: '대구 달서구 조암로 67 주1동 1층',
         phone: '053-635-6565',
         hours: '17:00 ~ 24:00 (라스트오더 23:00) / 매주 월요일 정기휴무',
         parking: '건물 지하 주차장 이용 가능 및 신월성 공영주차장 도보 2분',
-        coordinates: '35.8205, 128.5348'
+        coordinates: '35.8236, 128.5342'
       },
       {
         id: 3,
         name: '범어점',
-        address: '대구광역시 수성구 달구벌대로480길 9',
+        address: '대구 수성구 범어천로 47',
         phone: '053-756-6565',
         hours: '17:00 ~ 24:00 (라스트오더 23:00) / 매주 월요일 정기휴무',
         parking: '매장 뒤편 전용 주차장(10대) 및 범어 복개도로 노상 주차장 이용 편리',
-        coordinates: '35.8586, 128.6288'
+        coordinates: '35.8560, 128.6214'
       }
     ],
     events: [
