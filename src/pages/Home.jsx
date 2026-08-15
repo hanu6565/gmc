@@ -637,7 +637,7 @@ function Home({ openAuth, isLoggedIn, userEmail, handleLogout }) {
                   <div key={event.id} className="card-premium hover-gold-grow" style={eventCardStyle}>
                     <div style={{
                       width: '100%',
-                      height: '200px',
+                      aspectRatio: '1 / 1',
                       position: 'relative',
                       backgroundColor: 'var(--bg-secondary)',
                       overflow: 'hidden'
