@@ -328,14 +328,9 @@ function Home({ openAuth, isLoggedIn, userEmail, handleLogout }) {
       {/* SECTION 2: MENU SHOWCASE (3x3 Grid Accordion) */}
       <section id="menu-showcase" style={menuSectionStyle}>
         <div style={sectionContainerStyle}>
-          <div style={{ textAlign: 'center', marginBottom: '4rem' }}>
+          <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
             <span style={sectionTagStyle}>대표 메뉴</span>
-            <h2 style={sectionTitleStyle}>금막창 시그니처 3x3 라인업</h2>
-            <p style={sectionDescStyle}>
-              엄선된 비법 재료와 고도화된 숙성 공법으로 탄생한 9개 품격 다이닝 메뉴를 안내합니다.
-              <br />
-              <strong style={{ color: 'var(--primary-gold-hover)' }}>[카드 클릭 시 아코디언 상세 설명이 열립니다]</strong>
-            </p>
+            <h2 style={sectionTitleStyle}>금막창 시그니처 메뉴</h2>
           </div>
 
           <div style={menuGridStyle}>
