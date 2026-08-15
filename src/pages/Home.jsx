@@ -673,10 +673,10 @@ function Home({ openAuth, isLoggedIn, userEmail, handleLogout }) {
               <span style={{ ...sectionTagStyle, color: 'var(--primary-gold-hover)' }}>창업 문의</span>
               <h2 style={franchiseTitleStyle}>성공의 내일을 여는 파트너,<br />금막창 창업 가입 안내</h2>
               <p style={franchiseDescStyle}>
-                발효 누룩소금 저온숙성 공법과 대나무 참숯 초벌을 바탕으로 한 차별화된 아이템으로 
-                수요가 폭증하는 전통 BBQ 시장을 이끌어갈 점주님들을 소중히 맞이합니다. 
+                누룩 장인의 누룩소금 숙성막창을 바탕으로 한 차별화된 아이템으로
+                수요가 폭증하는 BBQ 시장을 이끌어갈 점주님을 소중히 맞이합니다.
                 <br />
-                기초 정보(이름, 연락처, 희망 지역)만 남겨주시면 가맹 상담 본부장이 
+                기초정보(이름, 연락처, 희망 지역)만 남겨주시면 가맹 상담 본부장이 
                 직접 1:1 창업 컨설팅을 도와드립니다.
               </p>
               <div style={franchiseHelpBoxStyle}>
