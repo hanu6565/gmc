@@ -1,28 +1,53 @@
 import React, { useState, useEffect } from 'react';
 import { ToggleLeft, ToggleRight, Calendar, Eye, Save, Trash2, Plus } from 'lucide-react';
+import { supabase } from '../../utils/supabase';
 
 function PopupTab() {
   const [popups, setPopups] = useState([]);
   const [isGlobalActive, setIsGlobalActive] = useState(true);
 
-  // Initialize configurations from local storage
+  // Initialize configurations from Supabase on mount
   useEffect(() => {
-    const savedPopups = localStorage.getItem('geummakchang_popups');
-    const savedGlobalActive = localStorage.getItem('geummakchang_popups_active');
-    
-    if (savedPopups) {
+    const fetchPopups = async () => {
       try {
-        setPopups(JSON.parse(savedPopups));
-      } catch (e) {
+        const { data, error } = await supabase
+          .from('configs')
+          .select('data')
+          .eq('id', 'geummakchang_popups_config')
+          .single();
+        if (data && data.data) {
+          const config = data.data;
+          setPopups(config.popups || []);
+          setIsGlobalActive(config.active !== false);
+        } else {
+          loadFallbackPopups();
+        }
+      } catch (err) {
+        console.error('Error fetching popups from Supabase:', err);
+        loadFallbackPopups();
+      }
+    };
+
+    const loadFallbackPopups = () => {
+      const savedPopups = localStorage.getItem('geummakchang_popups');
+      const savedGlobalActive = localStorage.getItem('geummakchang_popups_active');
+      
+      if (savedPopups) {
+        try {
+          setPopups(JSON.parse(savedPopups));
+        } catch (e) {
+          initializeDefaultPopups();
+        }
+      } else {
         initializeDefaultPopups();
       }
-    } else {
-      initializeDefaultPopups();
-    }
 
-    if (savedGlobalActive !== null) {
-      setIsGlobalActive(savedGlobalActive === 'true');
-    }
+      if (savedGlobalActive !== null) {
+        setIsGlobalActive(savedGlobalActive === 'true');
+      }
+    };
+
+    fetchPopups();
   }, []);
 
   const initializeDefaultPopups = () => {
@@ -43,12 +68,31 @@ function PopupTab() {
     localStorage.setItem('geummakchang_popups_active', 'true');
   };
 
-  const handleSave = (updatedPopups, globalActive = isGlobalActive) => {
+  const handleSave = async (updatedPopups, globalActive = isGlobalActive) => {
+    // Save locally as backup
     localStorage.setItem('geummakchang_popups', JSON.stringify(updatedPopups));
     localStorage.setItem('geummakchang_popups_active', globalActive.toString());
     setPopups(updatedPopups);
     setIsGlobalActive(globalActive);
-    alert('팝업 설정이 성공적으로 저장되었습니다!');
+
+    try {
+      const { error } = await supabase
+        .from('configs')
+        .upsert({
+          id: 'geummakchang_popups_config',
+          data: {
+            active: globalActive,
+            popups: updatedPopups
+          },
+          updated_at: new Date().toISOString()
+        });
+
+      if (error) throw error;
+      alert('팝업 설정이 성공적으로 저장되었습니다 (Supabase 동기화 완료)!');
+    } catch (err) {
+      console.error('Error saving popups to Supabase:', err);
+      alert('팝업 설정이 로컬에는 저장되었으나, 네트워크 장애로 데이터베이스 동기화에 실패했습니다.');
+    }
   };
 
   const handleAddPopup = () => {

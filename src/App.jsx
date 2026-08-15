@@ -1,14 +1,38 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Home from './pages/Home';
 import Admin from './pages/Admin';
 import AuthModal from './components/AuthModal';
+import { supabase } from './utils/supabase';
 
 function App() {
   const [isAuthOpen, setIsAuthOpen] = useState(false);
   const [authMode, setAuthMode] = useState('login'); // 'login' or 'signup'
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userEmail, setUserEmail] = useState('');
+
+  useEffect(() => {
+    // Check current active session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session) {
+        setIsLoggedIn(true);
+        setUserEmail(session.user.email);
+      }
+    });
+
+    // Listen to changes in auth state (login, logout, token refresh)
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (session) {
+        setIsLoggedIn(true);
+        setUserEmail(session.user.email);
+      } else {
+        setIsLoggedIn(false);
+        setUserEmail('');
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
 
   const openAuth = (mode) => {
     setAuthMode(mode);
@@ -25,7 +49,8 @@ function App() {
     setIsAuthOpen(false);
   };
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
     setIsLoggedIn(false);
     setUserEmail('');
   };

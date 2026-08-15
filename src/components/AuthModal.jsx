@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { X, Mail, Lock, User, Phone } from 'lucide-react';
+import { supabase } from '../utils/supabase';
 
 function AuthModal({ mode, setMode, onClose, onLoginSuccess }) {
   const [email, setEmail] = useState('');
@@ -9,7 +10,7 @@ function AuthModal({ mode, setMode, onClose, onLoginSuccess }) {
   const [phone, setPhone] = useState('');
   const [error, setError] = useState('');
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
 
@@ -27,15 +28,42 @@ function AuthModal({ mode, setMode, onClose, onLoginSuccess }) {
         setError('이름과 연락처를 입력해주세요.');
         return;
       }
-      // Simulate Signup Success
-      alert('회원가입이 완료되었습니다! (Supabase 연결 대기 중)');
+      
+      const { data, error: signUpError } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: {
+            name: name,
+            phone: phone
+          }
+        }
+      });
+
+      if (signUpError) {
+        setError(signUpError.message);
+        return;
+      }
+
+      alert('회원가입이 완료되었습니다! 가입하신 이메일로 로그인해 주세요.');
       setMode('login');
       return;
     }
 
-    // Simulate Login Success
-    if (email && password) {
-      onLoginSuccess(email);
+    // Login Flow
+    const { data, error: signInError } = await supabase.auth.signInWithPassword({
+      email,
+      password
+    });
+
+    if (signInError) {
+      setError(signInError.message === 'Invalid login credentials' ? '이메일 또는 비밀번호가 올바르지 않습니다.' : signInError.message);
+      return;
+    }
+
+    if (data.user) {
+      onLoginSuccess(data.user.email);
+      onClose();
     }
   };
 

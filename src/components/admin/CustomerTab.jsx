@@ -1,6 +1,7 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { Search, Filter, ArrowUpDown, Calendar, Award, User, ShoppingBag, Landmark, X, Trash2 } from 'lucide-react';
 import { mockCustomers } from './mockData';
+import { supabase } from '../../utils/supabase';
 
 function CustomerTab() {
   const [activeCrmTab, setActiveCrmTab] = useState('membership'); // 'membership' or 'franchise'
@@ -13,20 +14,103 @@ function CustomerTab() {
   const [sortBy, setSortBy] = useState('registerDate'); // 'totalAmount' or 'registerDate'
   const [selectedCustomer, setSelectedCustomer] = useState(null);
   
-  // Franchise Inquiries State
+  // Database States
+  const [customers, setCustomers] = useState([]);
   const [inquiries, setInquiries] = useState([]);
 
+  // Fetch Customers from Supabase on mount
   useEffect(() => {
-    const savedInquiries = localStorage.getItem('geummakchang_inquiries');
-    if (savedInquiries) {
+    const fetchCustomers = async () => {
       try {
-        setInquiries(JSON.parse(savedInquiries));
-      } catch (e) {
+        const { data, error } = await supabase
+          .from('customers')
+          .select('*')
+          .order('id', { ascending: true });
+        if (data && data.length > 0) {
+          const mapped = data.map(c => ({
+            id: c.id,
+            name: c.name,
+            email: c.email,
+            phone: c.phone,
+            gender: c.gender,
+            age: c.age,
+            ageGroup: c.age_group,
+            grade: c.grade,
+            frequency: c.frequency,
+            totalAmount: c.total_amount,
+            point: c.point,
+            registerDate: c.register_date,
+            recentPurchases: c.recent_purchases || []
+          }));
+          setCustomers(mapped);
+        } else {
+          setCustomers(mockCustomers);
+        }
+      } catch (err) {
+        console.error('Error fetching customers from Supabase:', err);
+        setCustomers(mockCustomers);
+      }
+    };
+    fetchCustomers();
+  }, []);
+
+  // Fetch Inquiries from Supabase on mount and listen to updates in real time
+  useEffect(() => {
+    const fetchInquiries = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('franchise_inquiries')
+          .select('*')
+          .order('id', { ascending: false });
+        if (data) {
+          const mapped = data.map(item => ({
+            id: item.id,
+            name: item.name,
+            phone: item.phone,
+            location: item.location,
+            date: item.created_at ? item.created_at.split('T')[0] : new Date().toISOString().split('T')[0],
+            status: item.status
+          }));
+          setInquiries(mapped);
+        } else {
+          loadFallbackInquiries();
+        }
+      } catch (err) {
+        console.error('Error fetching inquiries from Supabase:', err);
+        loadFallbackInquiries();
+      }
+    };
+
+    const loadFallbackInquiries = () => {
+      const savedInquiries = localStorage.getItem('geummakchang_inquiries');
+      if (savedInquiries) {
+        try {
+          setInquiries(JSON.parse(savedInquiries));
+        } catch (e) {
+          initializeDefaultInquiries();
+        }
+      } else {
         initializeDefaultInquiries();
       }
-    } else {
-      initializeDefaultInquiries();
-    }
+    };
+
+    fetchInquiries();
+
+    // Setup realtime subscription for inquiries table changes
+    const channel = supabase
+      .channel('crm-inquiries-changes')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'franchise_inquiries' },
+        () => {
+          fetchInquiries();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, []);
 
   const initializeDefaultInquiries = () => {
@@ -39,31 +123,53 @@ function CustomerTab() {
     localStorage.setItem('geummakchang_inquiries', JSON.stringify(defaultData));
   };
 
-  const handleUpdateInquiryStatus = (id, newStatus) => {
+  const handleUpdateInquiryStatus = async (id, newStatus) => {
     const updated = inquiries.map(item => item.id === id ? { ...item, status: newStatus } : item);
     setInquiries(updated);
     localStorage.setItem('geummakchang_inquiries', JSON.stringify(updated));
+
+    try {
+      const { error } = await supabase
+        .from('franchise_inquiries')
+        .update({ status: newStatus })
+        .eq('id', id);
+      if (error) throw error;
+    } catch (err) {
+      console.error('Error updating inquiry status in Supabase:', err);
+    }
   };
 
-  const handleDeleteInquiry = (id) => {
+  const handleDeleteInquiry = async (id) => {
     if (window.confirm('해당 창업 문의 접수 내역을 삭제하시겠습니까?')) {
       const updated = inquiries.filter(item => item.id !== id);
       setInquiries(updated);
       localStorage.setItem('geummakchang_inquiries', JSON.stringify(updated));
+
+      try {
+        const { error } = await supabase
+          .from('franchise_inquiries')
+          .delete()
+          .eq('id', id);
+        if (error) throw error;
+      } catch (err) {
+        console.error('Error deleting inquiry from Supabase:', err);
+      }
     }
   };
 
   // CRM Aggregate statistics
   const stats = useMemo(() => {
-    const total = mockCustomers.length;
-    const totalAmountSum = mockCustomers.reduce((sum, c) => sum + c.totalAmount, 0);
-    const totalPointsSum = mockCustomers.reduce((sum, c) => sum + c.point, 0);
+    const activeCustomersList = customers.length > 0 ? customers : mockCustomers;
+    const total = activeCustomersList.length;
+    const totalAmountSum = activeCustomersList.reduce((sum, c) => sum + c.totalAmount, 0);
+    const totalPointsSum = activeCustomersList.reduce((sum, c) => sum + c.point, 0);
     return { total, totalAmountSum, totalPointsSum };
-  }, []);
+  }, [customers]);
 
   // Filtering + Searching Logic for Members
   const filteredCustomers = useMemo(() => {
-    return mockCustomers.filter((customer) => {
+    const activeCustomersList = customers.length > 0 ? customers : mockCustomers;
+    return activeCustomersList.filter((customer) => {
       // Search Match
       const searchLower = search.toLowerCase();
       const matchSearch = 
@@ -79,7 +185,7 @@ function CustomerTab() {
         (filterAge === '20대' && customer.ageGroup === '20대') ||
         (filterAge === '30대' && customer.ageGroup === '30대') ||
         (filterAge === '40대' && customer.ageGroup === '40대') ||
-        (filterAge === '50대이상' && (customer.ageGroup === '50대' || customer.ageGroup === '55대 이상' || customer.age >= 50));
+        (filterAge === '50대이상' && (customer.ageGroup === '50대' || customer.ageGroup === '55대 이상' || customer.ageGroup === '50대 이상' || customer.age >= 50));
 
       // Grade Match
       const matchGrade = filterGrade === 'ALL' || customer.grade === filterGrade;
@@ -112,7 +218,7 @@ function CustomerTab() {
         return new Date(b.registerDate) - new Date(a.registerDate);
       }
     });
-  }, [search, filterGender, filterAge, filterGrade, filterFrequency, filterAmount, sortBy]);
+  }, [customers, search, filterGender, filterAge, filterGrade, filterFrequency, filterAmount, sortBy]);
 
   // Filtering + Searching Logic for Inquiries
   const filteredInquiries = useMemo(() => {

@@ -4,6 +4,7 @@ import Footer from '../components/Footer';
 import Popup from '../components/Popup';
 import { Calendar, Users, Phone, User, MapPin, Star, ChevronLeft, ChevronRight, Award, Plus, Layers, Flame, BookOpen, Heart } from 'lucide-react';
 import { getAsset } from '../utils/db';
+import { supabase } from '../utils/supabase';
 
 function Home({ openAuth, isLoggedIn, userEmail, handleLogout }) {
   const [config, setConfig] = useState(null);
@@ -97,48 +98,59 @@ function Home({ openAuth, isLoggedIn, userEmail, handleLogout }) {
     }
   ];
 
-  // Load config on mount
+  // Load config on mount from Supabase
   useEffect(() => {
-    const savedConfig = localStorage.getItem('geummakchang_config');
-    if (savedConfig) {
+    const fetchConfig = async () => {
       try {
-        setConfig(JSON.parse(savedConfig));
+        const { data, error } = await supabase
+          .from('configs')
+          .select('data')
+          .eq('id', 'geummakchang_config')
+          .single();
+        if (data && data.data) {
+          setConfig(data.data);
+        } else {
+          loadFallbackConfig();
+        }
       } catch (e) {
-        setConfig(defaultData);
-      }
-    } else {
-      setConfig(defaultData);
-    }
-  }, []);
-
-  // Sync state when localStorage changes (e.g. from Admin page edits)
-  useEffect(() => {
-    const handleStorageChange = () => {
-      const savedConfig = localStorage.getItem('geummakchang_config');
-      if (savedConfig) {
-        setConfig(JSON.parse(savedConfig));
+        console.error('Error fetching Supabase configs, falling back:', e);
+        loadFallbackConfig();
       }
     };
 
-    // Fast local polling interval for same-tab updates or page transition synchronizations
-    const interval = setInterval(() => {
+    const loadFallbackConfig = () => {
       const savedConfig = localStorage.getItem('geummakchang_config');
       if (savedConfig) {
         try {
-          const parsed = JSON.parse(savedConfig);
-          if (JSON.stringify(parsed) !== JSON.stringify(config)) {
-            setConfig(parsed);
-          }
-        } catch (err) {}
+          setConfig(JSON.parse(savedConfig));
+        } catch (e) {
+          setConfig(defaultData);
+        }
+      } else {
+        setConfig(defaultData);
       }
-    }, 1000);
-
-    window.addEventListener('storage', handleStorageChange);
-    return () => {
-      window.removeEventListener('storage', handleStorageChange);
-      clearInterval(interval);
     };
-  }, [config]);
+
+    fetchConfig();
+
+    // Subscribe to realtime database changes for settings configurations
+    const channel = supabase
+      .channel('home-db-changes')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'configs' },
+        (payload) => {
+          if (payload.new && payload.new.id === 'geummakchang_config') {
+            setConfig(payload.new.data);
+          }
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, []);
 
   // Load preview video from IndexedDB if active
   useEffect(() => {
@@ -162,38 +174,50 @@ function Home({ openAuth, isLoggedIn, userEmail, handleLogout }) {
     return (match && match[2].length === 11) ? match[2] : '';
   };
 
-  // Franchise submission handler
-  const handleFranchiseSubmit = (e) => {
+  // Franchise submission handler using Supabase
+  const handleFranchiseSubmit = async (e) => {
     e.preventDefault();
     if (!franchiseForm.name || !franchiseForm.phone || !franchiseForm.location) {
       alert('모든 양식을 올바르게 작성해 주세요.');
       return;
     }
 
-    const savedInquiries = localStorage.getItem('geummakchang_inquiries');
-    let inquiriesList = [];
-    if (savedInquiries) {
-      try {
-        inquiriesList = JSON.parse(savedInquiries);
-      } catch (e) {
-        inquiriesList = [];
+    try {
+      const { data, error } = await supabase
+        .from('franchise_inquiries')
+        .insert([
+          {
+            name: franchiseForm.name,
+            phone: franchiseForm.phone,
+            location: franchiseForm.location,
+            status: '상담 대기'
+          }
+        ]);
+
+      if (error) throw error;
+
+      alert(`[가맹창업 문의 신청 완료]\n성함: ${franchiseForm.name}님\n연락처: ${franchiseForm.phone}\n희망지역: ${franchiseForm.location}\n\n신속히 담당 가맹본부실에서 안내 전화를 드리겠습니다.`);
+      setFranchiseForm({ name: '', phone: '', location: '' });
+    } catch (err) {
+      console.error('Error inserting franchise inquiry to Supabase:', err);
+      // Fallback local storage save
+      const savedInquiries = localStorage.getItem('geummakchang_inquiries');
+      let inquiriesList = [];
+      if (savedInquiries) {
+        try { inquiriesList = JSON.parse(savedInquiries); } catch (e) {}
       }
+      const newInquiry = {
+        id: Date.now(),
+        name: franchiseForm.name,
+        phone: franchiseForm.phone,
+        location: franchiseForm.location,
+        date: new Date().toISOString().split('T')[0],
+        status: '상담 대기'
+      };
+      localStorage.setItem('geummakchang_inquiries', JSON.stringify([newInquiry, ...inquiriesList]));
+      alert('네트워크 상태 문제로 인해 임시 저장 공간에 접수되었습니다. 신속히 안내 드리겠습니다.');
+      setFranchiseForm({ name: '', phone: '', location: '' });
     }
-
-    const newInquiry = {
-      id: Date.now(),
-      name: franchiseForm.name,
-      phone: franchiseForm.phone,
-      location: franchiseForm.location,
-      date: new Date().toISOString().split('T')[0],
-      status: '상담 대기'
-    };
-
-    const updated = [newInquiry, ...inquiriesList];
-    localStorage.setItem('geummakchang_inquiries', JSON.stringify(updated));
-
-    alert(`[가맹창업 문의 신청 완료]\n성함: ${franchiseForm.name}님\n연락처: ${franchiseForm.phone}\n희망지역: ${franchiseForm.location}\n\n신속히 담당 가맹본부실에서 안내 전화를 드리겠습니다.`);
-    setFranchiseForm({ name: '', phone: '', location: '' });
   };
 
   // Carousel controls

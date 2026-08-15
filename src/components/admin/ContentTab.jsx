@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Video, Type, Grid, Award, MapPin, Plus, Trash2, ArrowUp, ArrowDown, Save, AlertTriangle } from 'lucide-react';
+import { supabase } from '../../utils/supabase';
 
 function ContentTab() {
   const [activeSubTab, setActiveSubTab] = useState('hero');
@@ -8,18 +9,40 @@ function ContentTab() {
   const [uploadStatus, setUploadStatus] = useState('');
   const [previewVideoUrl, setPreviewVideoUrl] = useState('');
 
-  // Default config initializer
+  // Fetch config from Supabase on mount
   useEffect(() => {
-    const savedConfig = localStorage.getItem('geummakchang_config');
-    if (savedConfig) {
+    const fetchConfig = async () => {
       try {
-        setConfig(JSON.parse(savedConfig));
-      } catch (e) {
+        const { data, error } = await supabase
+          .from('configs')
+          .select('data')
+          .eq('id', 'geummakchang_config')
+          .single();
+        if (data && data.data) {
+          setConfig(data.data);
+        } else {
+          loadFallbackConfig();
+        }
+      } catch (err) {
+        console.error('Error fetching config from Supabase:', err);
+        loadFallbackConfig();
+      }
+    };
+
+    const loadFallbackConfig = () => {
+      const savedConfig = localStorage.getItem('geummakchang_config');
+      if (savedConfig) {
+        try {
+          setConfig(JSON.parse(savedConfig));
+        } catch (e) {
+          initializeDefaultConfig();
+        }
+      } else {
         initializeDefaultConfig();
       }
-    } else {
-      initializeDefaultConfig();
-    }
+    };
+
+    fetchConfig();
   }, []);
 
   // Load preview video from IndexedDB if active
@@ -136,10 +159,26 @@ function ContentTab() {
     localStorage.setItem('geummakchang_config', JSON.stringify(defaultData));
   };
 
-  const handleSave = (newConfig) => {
+  const handleSave = async (newConfig) => {
+    // Save locally as backup
     localStorage.setItem('geummakchang_config', JSON.stringify(newConfig));
     setConfig(newConfig);
-    alert('홈페이지 콘텐츠 설정이 성공적으로 저장되었습니다!');
+    
+    try {
+      const { error } = await supabase
+        .from('configs')
+        .upsert({
+          id: 'geummakchang_config',
+          data: newConfig,
+          updated_at: new Date().toISOString()
+        });
+      
+      if (error) throw error;
+      alert('홈페이지 콘텐츠 설정이 성공적으로 저장되었습니다 (Supabase 동기화 완료)!');
+    } catch (err) {
+      console.error('Error saving config to Supabase:', err);
+      alert('설정이 로컬에는 저장되었으나, 네트워크 장애로 데이터베이스 동기화에 실패했습니다.');
+    }
   };
 
   // Helper to extract YouTube video ID

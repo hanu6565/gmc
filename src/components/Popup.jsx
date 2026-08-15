@@ -1,45 +1,113 @@
 import React, { useState, useEffect } from 'react';
 import { X } from 'lucide-react';
+import { supabase } from '../utils/supabase';
 
 function Popup() {
   const [activePopups, setActivePopups] = useState([]);
 
   useEffect(() => {
-    const isGlobalActive = localStorage.getItem('geummakchang_popups_active') !== 'false';
-    if (!isGlobalActive) return;
-
-    const savedPopups = localStorage.getItem('geummakchang_popups');
-    if (savedPopups) {
+    const fetchPopups = async () => {
       try {
-        const parsed = JSON.parse(savedPopups);
-        const todayStr = new Date().toISOString().split('T')[0];
-        
-        // Filter popups that are active, within dates, and not dismissed for "today"
-        const filtered = parsed.filter(popup => {
-          if (!popup.isActive) return false;
-          
-          // Date Range Check
-          if (popup.startDate && todayStr < popup.startDate) return false;
-          if (popup.endDate && todayStr > popup.endDate) return false;
-          
-          // "Do not show today" Check
-          const dismissedTime = localStorage.getItem(`geummakchang_dismiss_${popup.id}`);
-          if (dismissedTime) {
-            const timeDiff = Date.now() - parseInt(dismissedTime, 10);
-            const oneDayMs = 24 * 60 * 60 * 1000;
-            if (timeDiff < oneDayMs) {
-              return false; // Still within 24 hours
-            }
+        const { data, error } = await supabase
+          .from('configs')
+          .select('data')
+          .eq('id', 'geummakchang_popups_config')
+          .single();
+        if (data && data.data) {
+          const config = data.data;
+          if (!config.active) {
+            setActivePopups([]);
+            return;
           }
           
-          return true;
-        });
-        
-        setActivePopups(filtered);
-      } catch (e) {
-        console.error('Error parsing popups', e);
+          const todayStr = new Date().toISOString().split('T')[0];
+          const filtered = (config.popups || []).filter(popup => {
+            if (!popup.isActive) return false;
+            if (popup.startDate && todayStr < popup.startDate) return false;
+            if (popup.endDate && todayStr > popup.endDate) return false;
+            
+            const dismissedTime = localStorage.getItem(`geummakchang_dismiss_${popup.id}`);
+            if (dismissedTime) {
+              const timeDiff = Date.now() - parseInt(dismissedTime, 10);
+              const oneDayMs = 24 * 60 * 60 * 1000;
+              if (timeDiff < oneDayMs) {
+                return false; // Still within 24 hours
+              }
+            }
+            return true;
+          });
+          setActivePopups(filtered);
+        } else {
+          loadFallbackPopups();
+        }
+      } catch (err) {
+        console.error('Error fetching popups from Supabase:', err);
+        loadFallbackPopups();
       }
-    }
+    };
+
+    const loadFallbackPopups = () => {
+      const isGlobalActive = localStorage.getItem('geummakchang_popups_active') !== 'false';
+      if (!isGlobalActive) return;
+      const savedPopups = localStorage.getItem('geummakchang_popups');
+      if (savedPopups) {
+        try {
+          const parsed = JSON.parse(savedPopups);
+          const todayStr = new Date().toISOString().split('T')[0];
+          const filtered = parsed.filter(popup => {
+            if (!popup.isActive) return false;
+            if (popup.startDate && todayStr < popup.startDate) return false;
+            if (popup.endDate && todayStr > popup.endDate) return false;
+            const dismissedTime = localStorage.getItem(`geummakchang_dismiss_${popup.id}`);
+            if (dismissedTime) {
+              const timeDiff = Date.now() - parseInt(dismissedTime, 10);
+              const oneDayMs = 24 * 60 * 60 * 1000;
+              if (timeDiff < oneDayMs) return false;
+            }
+            return true;
+          });
+          setActivePopups(filtered);
+        } catch (e) {}
+      }
+    };
+
+    fetchPopups();
+
+    // Subscribe to popups database changes in real-time
+    const channel = supabase
+      .channel('popup-db-changes')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'configs' },
+        (payload) => {
+          if (payload.new && payload.new.id === 'geummakchang_popups_config') {
+            const config = payload.new.data;
+            if (!config.active) {
+              setActivePopups([]);
+              return;
+            }
+            const todayStr = new Date().toISOString().split('T')[0];
+            const filtered = (config.popups || []).filter(popup => {
+              if (!popup.isActive) return false;
+              if (popup.startDate && todayStr < popup.startDate) return false;
+              if (popup.endDate && todayStr > popup.endDate) return false;
+              const dismissedTime = localStorage.getItem(`geummakchang_dismiss_${popup.id}`);
+              if (dismissedTime) {
+                const timeDiff = Date.now() - parseInt(dismissedTime, 10);
+                const oneDayMs = 24 * 60 * 60 * 1000;
+                if (timeDiff < oneDayMs) return false;
+              }
+              return true;
+            });
+            setActivePopups(filtered);
+          }
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, []);
 
   const closePopup = (id) => {
