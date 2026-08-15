@@ -3,6 +3,7 @@ import Header from '../components/Header';
 import Footer from '../components/Footer';
 import Popup from '../components/Popup';
 import { Calendar, Users, Phone, User, MapPin, Star, ChevronLeft, ChevronRight, Award, Plus, Layers, Flame, BookOpen, Heart } from 'lucide-react';
+import { getAsset } from '../utils/db';
 
 function Home({ openAuth, isLoggedIn, userEmail, handleLogout }) {
   const [config, setConfig] = useState(null);
@@ -142,13 +143,11 @@ function Home({ openAuth, isLoggedIn, userEmail, handleLogout }) {
   // Load preview video from IndexedDB if active
   useEffect(() => {
     if (config && config.hero.videoType === 'file' && config.hero.videoUrl === 'indexeddb:hero_video') {
-      import('../utils/db').then(({ getAsset }) => {
-        getAsset('hero_video').then(blob => {
-          if (blob) {
-            const localUrl = URL.createObjectURL(blob);
-            setIndexedVideoUrl(localUrl);
-          }
-        });
+      getAsset('hero_video').then(blob => {
+        if (blob) {
+          const localUrl = URL.createObjectURL(blob);
+          setIndexedVideoUrl(localUrl);
+        }
       });
     } else {
       setIndexedVideoUrl('');
@@ -234,17 +233,19 @@ function Home({ openAuth, isLoggedIn, userEmail, handleLogout }) {
             ></iframe>
           </div>
         ) : (
-          <video 
-            autoPlay 
-            muted 
-            loop 
-            playsInline
-            style={videoBackgroundElementStyle}
-            poster="/geummakchang_main.png"
-            key={indexedVideoUrl || config.hero.videoUrl}
-          >
-            <source src={indexedVideoUrl || config.hero.videoUrl} type="video/mp4" />
-          </video>
+          (!config.hero.videoUrl.startsWith('indexeddb:') || indexedVideoUrl) && (
+            <video 
+              autoPlay 
+              muted 
+              loop 
+              playsInline
+              style={videoBackgroundElementStyle}
+              poster="/geummakchang_main.png"
+              key={indexedVideoUrl || config.hero.videoUrl}
+            >
+              <source src={indexedVideoUrl || config.hero.videoUrl} type="video/mp4" />
+            </video>
+          )
         )}
 
         {/* Hero Overlay */}
