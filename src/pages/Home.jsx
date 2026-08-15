@@ -277,7 +277,7 @@ function Home({ openAuth, isLoggedIn, userEmail, handleLogout }) {
 
         <div style={heroContainerStyle}>
           <div style={{ ...heroContentStyle, fontFamily: config.hero.font || 'Noto Sans KR' }} className="animate-fade-in">
-            <span style={heroTagStyle}>PREMIUM FERMENTED BBQ DINING</span>
+            <span style={heroTagStyle}>A NEW STANDARD, NATURALLY FERMENTED</span>
             <h1 style={heroTitleStyle}>
               {config.hero.mainTitle}
             </h1>
@@ -842,7 +842,7 @@ const heroContainerStyle = {
 };
 
 const heroContentStyle = {
-  maxWidth: '750px',
+  maxWidth: '950px',
   color: 'var(--text-light)'
 };
 
