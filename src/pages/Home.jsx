@@ -437,48 +437,49 @@ function Home({ openAuth, isLoggedIn, userEmail, handleLogout }) {
               </div>
             </div>
 
-            {/* Story Right: sauces and graphics */}
+            {/* Story Right: 4 reasons proving taste */}
             <div style={storyRightStyle}>
-              <h3 style={sauceTitleStyle}>금막창 맛을 배가시키는 명품 소스 4종</h3>
-              <p style={{ fontSize: '0.85rem', color: 'var(--text-light-muted)', marginBottom: '2rem', textAlign: 'center' }}>
-                [각 마크 위에 커서를 올리시면 소스의 상세 조리법과 특징이 제공됩니다]
+              <p style={{ fontSize: '0.85rem', color: '#cbd5e1', textAlign: 'center', letterSpacing: '0.05em', marginBottom: '0.25rem' }}>
+                맛있는 막창은 기본입니다
               </p>
+              <h3 style={sauceTitleStyle}>금막창이 맛을 증명하는 4가지</h3>
+              <div style={{ width: '40px', height: '2px', backgroundColor: 'var(--primary-gold)', margin: '0.75rem auto 1.5rem' }}></div>
 
               <div style={saucesFlexStyle}>
-                {/* Sauce 1 */}
-                <div className="card-premium" style={sauceCardStyle}>
-                  <div style={sauceIconBoxStyle}><Flame size={20} /></div>
-                  <h4 style={sauceNameStyle}>누룩소금 시즈닝</h4>
-                  <div style={sauceHoverOverlayStyle} className="hover-target">
-                    쌀누룩을 소금과 섞어 발효한 자연 천연 시즈닝. 짜지 않고 풍부한 아미노산 감칠맛과 특유의 자연스러운 은은한 단맛을 더해 고기의 육즙을 보존합니다.
-                  </div>
+                {/* Step 1 */}
+                <div className="card-premium" style={stepCardStyle}>
+                  <span style={stepBadgeStyle}>STEP 1</span>
+                  <h4 style={stepTitleStyle}>특허받은 누룩숙성</h4>
+                  <p style={stepDescStyle}>
+                    깊은 풍미의 비결은<br />누룩명인의 저온 숙성 기술
+                  </p>
                 </div>
 
-                {/* Sauce 2 */}
-                <div className="card-premium" style={sauceCardStyle}>
-                  <div style={sauceIconBoxStyle}><BookOpen size={20} /></div>
-                  <h4 style={sauceNameStyle}>명가 막장 소스</h4>
-                  <div style={sauceHoverOverlayStyle} className="hover-target">
-                    재래식 메주로 고소하게 빚어낸 전통 막장에 땅콩, 청양고추, 실파를 듬뿍 썰어 넣은 시그니처 디핑 소스. 막창의 풍미를 200% 완성합니다.
-                  </div>
+                {/* Step 2 */}
+                <div className="card-premium" style={stepCardStyle}>
+                  <span style={stepBadgeStyle}>STEP 2</span>
+                  <h4 style={stepTitleStyle}>맞춤형 부위 손질</h4>
+                  <p style={stepDescStyle}>
+                    동글막창은 부드럽고 촉촉하게,<br />넙적막창은 고소하고 쫄깃하게
+                  </p>
                 </div>
 
-                {/* Sauce 3 */}
-                <div className="card-premium" style={sauceCardStyle}>
-                  <div style={sauceIconBoxStyle}><Layers size={20} /></div>
-                  <h4 style={sauceNameStyle}>제철 수제 장아찌</h4>
-                  <div style={sauceHoverOverlayStyle} className="hover-target">
-                    명이나물, 깻잎, 제철 야채를 수제 양조간장에 끓여내 새콤하고 짭짤하게 에이징한 찬. 고기의 기름진 맛을 개운하게 잡아줍니다.
-                  </div>
+                {/* Step 3 */}
+                <div className="card-premium" style={stepCardStyle}>
+                  <span style={stepBadgeStyle}>STEP 3</span>
+                  <h4 style={stepTitleStyle}>시그니처 소스 3종</h4>
+                  <p style={stepDescStyle}>
+                    막창의 풍미를 끌어올리는<br />금막창만의 비법
+                  </p>
                 </div>
 
-                {/* Sauce 4 */}
-                <div className="card-premium" style={sauceCardStyle}>
-                  <div style={sauceIconBoxStyle}><Heart size={20} /></div>
-                  <h4 style={sauceNameStyle}>당귀 약고추장</h4>
-                  <div style={sauceHoverOverlayStyle} className="hover-target">
-                    몸에 좋은 향긋한 당귀 한약재를 달여 고추장과 함께 오랜 시간 조려낸 수제 장액. 한입 가득 퍼지는 한약재의 향과 기분 좋은 매콤함이 깔끔한 조화를 이룹니다.
-                  </div>
+                {/* Step 4 */}
+                <div className="card-premium" style={stepCardStyle}>
+                  <span style={stepBadgeStyle}>STEP 4</span>
+                  <h4 style={stepTitleStyle}>온도의 결을 살리는 불판</h4>
+                  <p style={stepDescStyle}>
+                    겉은 바삭하게,<br />속은 촉촉하게 완성됩니다.
+                  </p>
                 </div>
               </div>
             </div>
@@ -1146,57 +1147,45 @@ const saucesFlexStyle = {
   gap: '1.5rem'
 };
 
-const sauceCardStyle = {
-  position: 'relative',
-  backgroundColor: 'var(--bg-card-dark)',
-  border: '1px solid var(--border-color-dark)',
+const stepCardStyle = {
+  backgroundColor: 'rgba(255, 255, 255, 0.02)',
+  border: '1px solid rgba(255, 255, 255, 0.08)',
   borderRadius: '12px',
-  padding: '2rem 1rem',
+  padding: '1.75rem 1rem',
   display: 'flex',
   flexDirection: 'column',
   alignItems: 'center',
   justifyContent: 'center',
-  gap: '0.75rem',
-  overflow: 'hidden',
-  cursor: 'pointer',
-  height: '130px',
-  color: '#ffffff'
-};
-
-const sauceIconBoxStyle = {
-  width: '40px',
-  height: '40px',
-  borderRadius: '50%',
-  backgroundColor: 'rgba(197, 168, 128, 0.15)',
-  color: 'var(--primary-gold)',
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center'
-};
-
-const sauceNameStyle = {
-  fontSize: '1rem',
-  fontWeight: '800'
-};
-
-const sauceHoverOverlayStyle = {
-  position: 'absolute',
-  top: 0,
-  left: 0,
-  right: 0,
-  bottom: 0,
-  backgroundColor: 'var(--primary-gold)',
-  color: 'var(--bg-dark)',
-  fontSize: '0.75rem',
-  lineHeight: '1.4',
-  padding: '1rem',
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  opacity: 0,
-  transition: 'var(--transition-smooth)',
   textAlign: 'center',
-  fontWeight: '600'
+  minHeight: '170px',
+  color: '#ffffff',
+  boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
+};
+
+const stepBadgeStyle = {
+  backgroundColor: '#8c2222',
+  color: '#ffffff',
+  fontSize: '0.65rem',
+  fontWeight: '800',
+  padding: '0.2rem 0.5rem',
+  borderRadius: '4px',
+  letterSpacing: '0.05em',
+  marginBottom: '0.75rem',
+  display: 'inline-block'
+};
+
+const stepTitleStyle = {
+  fontSize: '1.05rem',
+  fontWeight: '800',
+  color: 'var(--primary-gold-hover)',
+  marginBottom: '0.5rem'
+};
+
+const stepDescStyle = {
+  fontSize: '0.8rem',
+  color: '#cbd5e1',
+  lineHeight: '1.5',
+  margin: 0
 };
 
 // SECTION 4: STORE INFO STYLES
