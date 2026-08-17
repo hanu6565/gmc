@@ -48,13 +48,13 @@ function Header({ openAuth, isLoggedIn, userEmail, handleLogout }) {
             </div>
           ) : (
             <div style={authSectionStyle}>
-              <button onClick={() => openAuth('login')} style={loginBtnStyle}>
+              <Link to="/login" style={loginBtnStyle}>
                 <span>로그인</span>
-              </button>
-              <button onClick={() => openAuth('signup')} className="btn-gold" style={authBtnStyle}>
+              </Link>
+              <Link to="/signup" className="btn-gold" style={authBtnLinkStyle}>
                 <UserPlus size={15} />
                 <span>회원가입</span>
-              </button>
+              </Link>
             </div>
           )}
         </div>
@@ -170,6 +170,14 @@ const authBtnStyle = {
   fontSize: '0.85rem',
   padding: '0.5rem 1rem',
   borderRadius: '6px',
+};
+
+const authBtnLinkStyle = {
+  ...authBtnStyle,
+  display: 'inline-flex',
+  alignItems: 'center',
+  gap: '0.5rem',
+  textDecoration: 'none',
 };
 
 export default Header;

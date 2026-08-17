@@ -1,6 +1,5 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { Search, Filter, ArrowUpDown, Calendar, Award, User, ShoppingBag, Landmark, X, Trash2 } from 'lucide-react';
-import { mockCustomers } from './mockData';
 import { supabase } from '../../utils/supabase';
 
 function CustomerTab() {
@@ -44,11 +43,11 @@ function CustomerTab() {
           }));
           setCustomers(mapped);
         } else {
-          setCustomers(mockCustomers);
+          setCustomers([]);
         }
       } catch (err) {
         console.error('Error fetching customers from Supabase:', err);
-        setCustomers(mockCustomers);
+        setCustomers([]);
       }
     };
     fetchCustomers();
@@ -159,7 +158,7 @@ function CustomerTab() {
 
   // CRM Aggregate statistics
   const stats = useMemo(() => {
-    const activeCustomersList = customers.length > 0 ? customers : mockCustomers;
+    const activeCustomersList = customers;
     const total = activeCustomersList.length;
     const totalAmountSum = activeCustomersList.reduce((sum, c) => sum + c.totalAmount, 0);
     const totalPointsSum = activeCustomersList.reduce((sum, c) => sum + c.point, 0);
@@ -168,7 +167,7 @@ function CustomerTab() {
 
   // Filtering + Searching Logic for Members
   const filteredCustomers = useMemo(() => {
-    const activeCustomersList = customers.length > 0 ? customers : mockCustomers;
+    const activeCustomersList = customers;
     return activeCustomersList.filter((customer) => {
       // Search Match
       const searchLower = search.toLowerCase();

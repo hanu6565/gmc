@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Home from './pages/Home';
 import Admin from './pages/Admin';
+import Signup from './pages/Signup';
+import Login from './pages/Login';
 import AuthModal from './components/AuthModal';
 import { supabase } from './utils/supabase';
 
@@ -78,6 +80,18 @@ function App() {
                 userEmail={userEmail}
                 openAuth={openAuth}
               />
+            } 
+          />
+          <Route 
+            path="/signup" 
+            element={
+              <Signup />
+            } 
+          />
+          <Route 
+            path="/login" 
+            element={
+              <Login onLoginSuccess={handleLoginSuccess} />
             } 
           />
         </Routes>

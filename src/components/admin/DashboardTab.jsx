@@ -1,16 +1,55 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Users, TrendingUp, CreditCard, Award, ArrowUpRight } from 'lucide-react';
 import { ResponsiveContainer, PieChart, Pie, Cell, Tooltip, Legend, AreaChart, Area, XAxis, YAxis, CartesianGrid } from 'recharts';
-import { mockCustomers, monthlySalesData } from './mockData';
+import { monthlySalesData } from './mockData';
+import { supabase } from '../../utils/supabase';
 
 function DashboardTab() {
-  // Aggregate mock database values dynamically
-  const totalCustomers = mockCustomers.length;
-  const totalRevenue = mockCustomers.reduce((sum, c) => sum + c.totalAmount, 0);
-  const totalVisits = mockCustomers.reduce((sum, c) => sum + c.frequency, 0);
+  const [customers, setCustomers] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  // Fetch Customers from Supabase on mount
+  useEffect(() => {
+    const fetchCustomers = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('customers')
+          .select('*')
+          .order('id', { ascending: true });
+        if (data) {
+          const mapped = data.map(c => ({
+            id: c.id,
+            name: c.name,
+            email: c.email,
+            phone: c.phone,
+            gender: c.gender,
+            age: c.age,
+            ageGroup: c.age_group,
+            grade: c.grade,
+            frequency: c.frequency,
+            totalAmount: c.total_amount,
+            point: c.point,
+            registerDate: c.register_date,
+            recentPurchases: c.recent_purchases || []
+          }));
+          setCustomers(mapped);
+        }
+      } catch (err) {
+        console.error('Error fetching customers for dashboard:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchCustomers();
+  }, []);
+
+  // Aggregate database values dynamically
+  const totalCustomers = customers.length;
+  const totalRevenue = customers.reduce((sum, c) => sum + c.totalAmount, 0);
+  const totalVisits = customers.reduce((sum, c) => sum + c.frequency, 0);
 
   // Group by grades dynamically
-  const gradeGroup = mockCustomers.reduce((acc, c) => {
+  const gradeGroup = customers.reduce((acc, c) => {
     acc[c.grade] = (acc[c.grade] || 0) + 1;
     return acc;
   }, {});
@@ -23,7 +62,7 @@ function DashboardTab() {
   ];
 
   // Sort by registration date for new customers
-  const recentCustomers = [...mockCustomers]
+  const recentCustomers = [...customers]
     .sort((a, b) => new Date(b.registerDate) - new Date(a.registerDate))
     .slice(0, 5);
 
@@ -78,7 +117,7 @@ function DashboardTab() {
           <div>
             <p style={kpiLabelStyle}>VIP 회원 비중</p>
             <h3 style={kpiValueStyle}>
-              {(( (gradeGroup['VIP'] || 0) / totalCustomers) * 100).toFixed(0)}%
+              {totalCustomers > 0 ? (((gradeGroup['VIP'] || 0) / totalCustomers) * 100).toFixed(0) : 0}%
             </h3>
             <p style={kpiMetaStyle}>우수 등급 유지율: 94%</p>
           </div>
