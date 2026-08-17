@@ -172,3 +172,14 @@ button, input, select, textarea {
 .animate-fade-in {
   animation: fadeIn 0.5s ease forwards;
 }
+
+/* Forgot Password Link */
+.forgot-password-link {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  transition: var(--transition-smooth);
+}
+.forgot-password-link:hover {
+  color: var(--primary-gold-hover);
+  text-decoration: underline;
+}

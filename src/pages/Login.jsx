@@ -97,7 +97,12 @@ function Login({ onLoginSuccess }) {
 
             {/* Password Field */}
             <div style={inputGroupStyle}>
-              <label style={labelStyle}>비밀번호</label>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <label style={labelStyle}>비밀번호</label>
+                <Link to="/find-password" className="forgot-password-link">
+                  비밀번호 찾기
+                </Link>
+              </div>
               <div style={inputWrapperStyle}>
                 <Lock size={18} style={inputIconStyle} />
                 <input
@@ -135,7 +140,7 @@ function Login({ onLoginSuccess }) {
             <p style={toggleTextStyle}>
               계정이 없으신가요?{' '}
               <Link to="/signup" style={toggleLinkStyle}>
-                회원가입하기
+                회원가입
               </Link>
             </p>
           </div>

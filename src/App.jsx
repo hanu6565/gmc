@@ -4,6 +4,7 @@ import Home from './pages/Home';
 import Admin from './pages/Admin';
 import Signup from './pages/Signup';
 import Login from './pages/Login';
+import FindPassword from './pages/FindPassword';
 import AuthModal from './components/AuthModal';
 import { supabase } from './utils/supabase';
 
@@ -92,6 +93,12 @@ function App() {
             path="/login" 
             element={
               <Login onLoginSuccess={handleLoginSuccess} />
+            } 
+          />
+          <Route 
+            path="/find-password" 
+            element={
+              <FindPassword />
             } 
           />
         </Routes>
