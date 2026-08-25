@@ -71,6 +71,9 @@ function CustomerTab() {
 
   // Fetch Inquiries from Supabase on mount and listen to updates in real time
   useEffect(() => {
+    // Clear legacy localStorage dummy inquiries
+    localStorage.removeItem('geummakchang_inquiries');
+
     const fetchInquiries = async () => {
       try {
         const { data, error } = await supabase
@@ -88,19 +91,7 @@ function CustomerTab() {
           }));
           setInquiries(mapped);
         } else {
-          const savedInquiries = localStorage.getItem('geummakchang_inquiries');
-          if (savedInquiries) {
-            try {
-              const parsed = JSON.parse(savedInquiries);
-              // Filter out default dummy accounts if present
-              const cleanInquiries = parsed.filter(item => !['최재혁', '김지현', '박상민'].includes(item.name));
-              setInquiries(cleanInquiries);
-            } catch (e) {
-              setInquiries([]);
-            }
-          } else {
-            setInquiries([]);
-          }
+          setInquiries([]);
         }
       } catch (err) {
         console.error('Error fetching inquiries from Supabase:', err);
@@ -127,9 +118,16 @@ function CustomerTab() {
     };
   }, []);
 
-  const initializeDefaultInquiries = () => {
-    setInquiries([]);
-    localStorage.removeItem('geummakchang_inquiries');
+  const handleClearAllInquiries = async () => {
+    if (window.confirm('등록된 전체 창업 문의 내역을 모두 삭제하시겠습니까?')) {
+      setInquiries([]);
+      localStorage.removeItem('geummakchang_inquiries');
+      try {
+        await supabase.from('franchise_inquiries').delete().neq('id', 0);
+      } catch (err) {
+        console.error('Error purging inquiries from Supabase:', err);
+      }
+    }
   };
 
   const handleUpdateInquiryStatus = async (id, newStatus) => {
@@ -473,6 +471,27 @@ function CustomerTab() {
 
           <div style={listMetaAreaStyle}>
             <span style={countTextStyle}>검색 결과: <strong>{filteredInquiries.length}</strong>건</span>
+            {inquiries.length > 0 && (
+              <button
+                onClick={handleClearAllInquiries}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.35rem',
+                  padding: '0.4rem 0.8rem',
+                  backgroundColor: '#fef2f2',
+                  color: '#ef4444',
+                  border: '1px solid #fca5a5',
+                  borderRadius: '6px',
+                  fontSize: '0.82rem',
+                  fontWeight: '600',
+                  cursor: 'pointer'
+                }}
+              >
+                <Trash2 size={14} />
+                <span>문의 전체 삭제</span>
+              </button>
+            )}
           </div>
 
           {/* Franchise Table */}
