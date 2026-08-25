@@ -185,7 +185,7 @@ function InstagramFeedSection({ instagramToken, instagramFeedUrl, customPosts })
           </p>
         </div>
 
-        {/* Official Live Instagram Content Container (Profile Header Cropped Off) */}
+        {/* Official Live Instagram Content Container (Profile Header Cropped Off, Full 3x2 Grid Visible) */}
         <div style={{
           display: 'flex',
           justifyContent: 'center',
@@ -193,29 +193,32 @@ function InstagramFeedSection({ instagramToken, instagramFeedUrl, customPosts })
           marginTop: '1.5rem',
           marginBottom: '2.5rem'
         }}>
-          <div style={{
-            width: '100%',
-            maxWidth: '920px',
-            height: '600px',
-            overflow: 'hidden',
-            borderRadius: '20px',
-            border: '1px solid var(--border-color)',
-            boxShadow: '0 10px 30px rgba(0,0,0,0.06)',
-            backgroundColor: '#ffffff',
-            position: 'relative'
-          }}>
+          <div 
+            className="insta-embed-crop-container"
+            style={{
+              width: '100%',
+              maxWidth: '920px',
+              height: '695px',
+              overflow: 'hidden',
+              borderRadius: '20px',
+              border: '1px solid var(--border-color)',
+              boxShadow: '0 10px 30px rgba(0,0,0,0.06)',
+              backgroundColor: '#ffffff',
+              position: 'relative'
+            }}
+          >
             <iframe
               src="https://www.instagram.com/geummakchang/embed"
               width="100%"
-              height="760px"
+              height="830px"
               frameBorder="0"
               scrolling="no"
               allowTransparency="true"
               style={{
-                marginTop: '-135px',
+                marginTop: '-130px',
                 border: 'none',
                 width: '100%',
-                height: '760px'
+                height: '830px'
               }}
               title="금막창 공식 인스타그램 콘텐츠 피드"
             ></iframe>

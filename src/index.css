@@ -297,3 +297,24 @@ button, input, select, textarea {
   }
 }
 
+/* Responsive Cropped Instagram Live Feed Container */
+@media (max-width: 768px) {
+  .insta-embed-crop-container {
+    height: 540px !important;
+  }
+  .insta-embed-crop-container iframe {
+    margin-top: -115px !important;
+    height: 670px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .insta-embed-crop-container {
+    height: 440px !important;
+  }
+  .insta-embed-crop-container iframe {
+    margin-top: -105px !important;
+    height: 560px !important;
+  }
+}
+
