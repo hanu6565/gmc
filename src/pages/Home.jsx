@@ -666,35 +666,12 @@ function Home({ openAuth, isLoggedIn, userEmail, userName, isAdmin, handleLogout
               <h2 style={{ ...sectionTitleStyle, textAlign: 'left', marginBottom: '0.25rem' }}>금막창 이벤트 & 매장 소식</h2>
               <p style={{ fontSize: '0.95rem', color: 'var(--text-muted)' }}>금막창의 신규 매장 오픈 소식, 신메뉴 출시, 브랜드 공지사항 및 다채로운 혜택 소식을 한눈에 확인해 보세요.</p>
             </div>
-            
-            <div style={eventTabsWrapperStyle}>
-              <button 
-                onClick={() => setActiveEventTab('ongoing')}
-                style={{
-                  ...eventTabBtnStyle,
-                  borderBottom: activeEventTab === 'ongoing' ? '2px solid var(--primary-gold)' : 'none',
-                  color: activeEventTab === 'ongoing' ? 'var(--primary-gold-hover)' : 'var(--text-muted)'
-                }}
-              >
-                진행중인 이벤트
-              </button>
-              <button 
-                onClick={() => setActiveEventTab('ended')}
-                style={{
-                  ...eventTabBtnStyle,
-                  borderBottom: activeEventTab === 'ended' ? '2px solid var(--primary-gold)' : 'none',
-                  color: activeEventTab === 'ended' ? 'var(--primary-gold-hover)' : 'var(--text-muted)'
-                }}
-              >
-                종료된 이벤트
-              </button>
-            </div>
           </div>
 
           <div style={eventGridStyle} className="event-grid-responsive">
-            {config.events.filter(e => e.status === activeEventTab).length > 0 ? (
+            {config.events.filter(e => e.status !== 'ended').length > 0 ? (
               config.events
-                .filter(e => e.status === activeEventTab)
+                .filter(e => e.status !== 'ended')
                 .map((event) => (
                   <div 
                     key={event.id} 
