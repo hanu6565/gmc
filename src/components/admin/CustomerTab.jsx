@@ -77,7 +77,7 @@ function CustomerTab() {
           .from('franchise_inquiries')
           .select('*')
           .order('id', { ascending: false });
-        if (data) {
+        if (data && data.length > 0) {
           const mapped = data.map(item => ({
             id: item.id,
             name: item.name,
@@ -88,24 +88,23 @@ function CustomerTab() {
           }));
           setInquiries(mapped);
         } else {
-          loadFallbackInquiries();
+          const savedInquiries = localStorage.getItem('geummakchang_inquiries');
+          if (savedInquiries) {
+            try {
+              const parsed = JSON.parse(savedInquiries);
+              // Filter out default dummy accounts if present
+              const cleanInquiries = parsed.filter(item => !['최재혁', '김지현', '박상민'].includes(item.name));
+              setInquiries(cleanInquiries);
+            } catch (e) {
+              setInquiries([]);
+            }
+          } else {
+            setInquiries([]);
+          }
         }
       } catch (err) {
         console.error('Error fetching inquiries from Supabase:', err);
-        loadFallbackInquiries();
-      }
-    };
-
-    const loadFallbackInquiries = () => {
-      const savedInquiries = localStorage.getItem('geummakchang_inquiries');
-      if (savedInquiries) {
-        try {
-          setInquiries(JSON.parse(savedInquiries));
-        } catch (e) {
-          initializeDefaultInquiries();
-        }
-      } else {
-        initializeDefaultInquiries();
+        setInquiries([]);
       }
     };
 
@@ -129,13 +128,8 @@ function CustomerTab() {
   }, []);
 
   const initializeDefaultInquiries = () => {
-    const defaultData = [
-      { id: 1, name: '최재혁', phone: '010-9876-5432', location: '대구 수성구', date: '2026-08-14', status: '상담 대기' },
-      { id: 2, name: '김지현', phone: '010-8765-4321', location: '서울 마포구', date: '2026-08-15', status: '상담 완료' },
-      { id: 3, name: '박상민', phone: '010-5678-1234', location: '경기도 수원시', date: '2026-08-15', status: '연락 중' }
-    ];
-    setInquiries(defaultData);
-    localStorage.setItem('geummakchang_inquiries', JSON.stringify(defaultData));
+    setInquiries([]);
+    localStorage.removeItem('geummakchang_inquiries');
   };
 
   const handleUpdateInquiryStatus = async (id, newStatus) => {
