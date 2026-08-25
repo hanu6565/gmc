@@ -173,16 +173,24 @@ function Home({ openAuth, isLoggedIn, userEmail, handleLogout }) {
 
   // Load preview video from IndexedDB if active
   useEffect(() => {
+    let createdUrl = null;
+    let isMounted = true;
     if (config && config.hero.videoType === 'file' && config.hero.videoUrl === 'indexeddb:hero_video') {
       getAsset('hero_video').then(blob => {
-        if (blob) {
-          const localUrl = URL.createObjectURL(blob);
-          setIndexedVideoUrl(localUrl);
+        if (isMounted && blob) {
+          createdUrl = URL.createObjectURL(blob);
+          setIndexedVideoUrl(createdUrl);
         }
       });
     } else {
       setIndexedVideoUrl('');
     }
+    return () => {
+      isMounted = false;
+      if (createdUrl) {
+        URL.revokeObjectURL(createdUrl);
+      }
+    };
   }, [config]);
 
   // Helper to extract YouTube ID

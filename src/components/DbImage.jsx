@@ -1,13 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { getAsset } from '../utils/db';
 
-function DbImage({ src, alt, style, className }) {
+const DEFAULT_PLACEHOLDER = 'https://images.unsplash.com/photo-1544025162-d76694265947?w=500&auto=format&fit=crop&q=80';
+
+function DbImage({ src, alt, style, className, loading = 'lazy' }) {
   const [displayUrl, setDisplayUrl] = useState('');
 
   useEffect(() => {
     let isMounted = true;
+    let createdUrl = null;
+
     if (!src) {
-      setDisplayUrl('https://images.unsplash.com/photo-1544025162-d76694265947?w=500&auto=format&fit=crop&q=80');
+      setDisplayUrl(DEFAULT_PLACEHOLDER);
       return;
     }
 
@@ -16,16 +20,15 @@ function DbImage({ src, alt, style, className }) {
       getAsset(key).then(blob => {
         if (isMounted) {
           if (blob) {
-            const url = URL.createObjectURL(blob);
-            setDisplayUrl(url);
+            createdUrl = URL.createObjectURL(blob);
+            setDisplayUrl(createdUrl);
           } else {
-            // Fallback placeholder if indexeddb asset is not found on client
-            setDisplayUrl('https://images.unsplash.com/photo-1544025162-d76694265947?w=500&auto=format&fit=crop&q=80');
+            setDisplayUrl(DEFAULT_PLACEHOLDER);
           }
         }
       }).catch(() => {
         if (isMounted) {
-          setDisplayUrl('https://images.unsplash.com/photo-1544025162-d76694265947?w=500&auto=format&fit=crop&q=80');
+          setDisplayUrl(DEFAULT_PLACEHOLDER);
         }
       });
     } else {
@@ -34,19 +37,22 @@ function DbImage({ src, alt, style, className }) {
 
     return () => {
       isMounted = false;
+      if (createdUrl) {
+        URL.revokeObjectURL(createdUrl);
+      }
     };
   }, [src]);
 
   return (
     <img 
-      src={displayUrl || 'https://images.unsplash.com/photo-1544025162-d76694265947?w=500&auto=format&fit=crop&q=80'} 
+      src={displayUrl || DEFAULT_PLACEHOLDER} 
       alt={alt || '이미지'} 
       style={style} 
       className={className} 
+      loading={loading}
       onError={(e) => {
-        // Fallback on load error
         e.target.onerror = null;
-        e.target.src = 'https://images.unsplash.com/photo-1544025162-d76694265947?w=500&auto=format&fit=crop&q=80';
+        e.target.src = DEFAULT_PLACEHOLDER;
       }}
     />
   );
