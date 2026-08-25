@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import Popup from '../components/Popup';
+import InstagramFeedSection from '../components/InstagramFeedSection';
 import { Calendar, Users, Phone, User, MapPin, Star, ChevronLeft, ChevronRight, Award, Plus, Layers, Flame, BookOpen, Heart } from 'lucide-react';
 import { getAsset } from '../utils/db';
 import { supabase } from '../utils/supabase';
@@ -726,6 +727,9 @@ function Home({ openAuth, isLoggedIn, userEmail, userName, isAdmin, handleLogout
           </div>
         </div>
       </section>
+
+      {/* SECTION: INSTAGRAM FEED (3x2 Grid) */}
+      <InstagramFeedSection />
 
       {/* SECTION 7: FRANCHISE INQUIRY (LIGHT CRM LEAD INTAKE) */}
       <section style={franchiseSectionStyle}>

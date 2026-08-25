@@ -273,3 +273,27 @@ button, input, select, textarea {
     font-size: 1.5rem !important;
   }
 }
+
+/* Instagram Feed Hover & Mobile Grid Styles */
+.insta-card-hover:hover .insta-overlay {
+  opacity: 1 !important;
+}
+
+.insta-card-hover:hover img {
+  transform: scale(1.06) !important;
+}
+
+@media (max-width: 1024px) {
+  .insta-grid-responsive {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 1.25rem !important;
+  }
+}
+
+@media (max-width: 600px) {
+  .insta-grid-responsive {
+    grid-template-columns: 1fr !important;
+    gap: 1rem !important;
+  }
+}
+
