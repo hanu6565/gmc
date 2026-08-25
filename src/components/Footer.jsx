@@ -15,8 +15,8 @@ function Footer() {
             />
           </div>
           <p style={descStyle}>
-            황금빛 불판 위에서 피어나는 최고급 전통 직화 구이.<br />
-            금막창은 엄선된 원육과 철저한 위생 관리를 통해 품격 있는 미식 경험을 제공합니다.
+            특허받은 누룩소금 저온숙성 공법으로 빚어낸 극강의 부드러움과 고소함.<br />
+            금막창은 대나무 참숯 향 가득한 초벌구이로 최상의 다이닝을 선물합니다.
           </p>
           <div style={snsContainerStyle}>
             <a 
@@ -46,32 +46,14 @@ function Footer() {
           </div>
         </div>
 
-        {/* Details Column */}
-        <div style={detailsColStyle}>
-          <h4 style={headingStyle}>CONTACT & INFO</h4>
-          <ul style={listStyle}>
-            <li style={listItemStyle}>
-              <MapPin size={16} style={iconStyle} />
-              <span>서울특별시 강남구 테헤란로 123, 금막창 빌딩 1F</span>
-            </li>
-            <li style={listItemStyle}>
-              <Phone size={16} style={iconStyle} />
-              <span>02-1234-5678</span>
-            </li>
-            <li style={listItemStyle}>
-              <Mail size={16} style={iconStyle} />
-              <span>contact@geummakchang.com</span>
-            </li>
-          </ul>
-        </div>
-
-        {/* Business Info Column */}
+        {/* Business Info Column (종로점) */}
         <div style={businessColStyle}>
-          <h4 style={headingStyle}>BUSINESS INFO</h4>
+          <h4 style={headingStyle}>STORE & BUSINESS INFO (종로점)</h4>
           <p style={businessTextStyle}>
-            상호명: (주)금막창 에프앤비 | 대표자: 홍길동<br />
-            사업자등록번호: 120-00-00000 | 통신판매업신고: 제 2026-서울강남-0000호<br />
-            개인정보보호책임자: 김철수 (privacy@geummakchang.com)
+            상호명: 금막창 종로점 | 대표자: 홍길동<br />
+            매장 주소: 서울특별시 종로구 삼일대로 385 (관철동 12-13) 1층 금막창 종로점<br />
+            매장 전화: 02-730-9292 | 영업시간: 매일 16:00 ~ 02:00 (연중무휴)<br />
+            사업자등록번호: 101-86-98765 | 개인정보보호책임자: 김철수 (privacy@geummakchang.com)
           </p>
         </div>
       </div>
