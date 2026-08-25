@@ -3,6 +3,7 @@ import { ToggleLeft, ToggleRight, Calendar, Eye, Save, Trash2, Plus } from 'luci
 import { supabase } from '../../utils/supabase';
 import DbImage from '../DbImage';
 import { saveAsset } from '../../utils/db';
+import { processImageUpload } from '../../utils/imageUtils';
 
 function PopupTab() {
   const [popups, setPopups] = useState([]);
@@ -230,26 +231,25 @@ function PopupTab() {
                          type="file" 
                          accept="image/*" 
                          onChange={async (e) => {
-                           const file = e.target.files[0];
-                           if (!file) return;
-                           if (file.size > 15 * 1024 * 1024) {
-                             alert('이미지 크기는 15MB 이하로 선택해 주세요.');
-                             return;
-                           }
-                           try {
-                             const key = `popup_image_${popup.id}`;
-                             await saveAsset(key, file);
-                             
-                             const updated = [...popups];
-                             updated[idx].image = `indexeddb:${key}`;
-                             setPopups(updated);
-                             
-                             localStorage.setItem('geummakchang_popups', JSON.stringify(updated));
-                           } catch (err) {
-                             console.error('Error uploading popup image:', err);
-                             alert('이미지 저장 중 오류가 발생했습니다.');
-                           }
-                         }}
+                            const file = e.target.files[0];
+                            if (!file) return;
+                            if (file.size > 15 * 1024 * 1024) {
+                              alert('이미지 크기는 15MB 이하로 선택해 주세요.');
+                              return;
+                            }
+                            try {
+                              const imageUrl = await processImageUpload(file, 'assets', 'popups');
+                              if (imageUrl) {
+                                const updated = [...popups];
+                                updated[idx].image = imageUrl;
+                                setPopups(updated);
+                                localStorage.setItem('geummakchang_popups', JSON.stringify(updated));
+                              }
+                            } catch (err) {
+                              console.error('Error uploading popup image:', err);
+                              alert('이미지 저장 중 오류가 발생했습니다.');
+                            }
+                          }}
                          style={{ display: 'none' }}
                        />
                      </label>

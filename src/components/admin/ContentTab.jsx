@@ -3,6 +3,7 @@ import { Video, Type, Grid, Award, MapPin, Plus, Trash2, ArrowUp, ArrowDown, Sav
 import { supabase } from '../../utils/supabase';
 import DbImage from '../DbImage';
 import { saveAsset, getAsset } from '../../utils/db';
+import { processImageUpload } from '../../utils/imageUtils';
 
 function ContentTab() {
   const [activeSubTab, setActiveSubTab] = useState('hero');
@@ -70,15 +71,18 @@ function ContentTab() {
       return;
     }
 
-    setUploadStatus('동영상을 임시 데이터베이스에 업로드하는 중...');
+    setUploadStatus('동영상을 서버/데이터베이스에 업로드하는 중...');
     try {
       await saveAsset('hero_video', file);
+      const uploadedUrl = await processImageUpload(file, 'assets', 'videos');
+      const videoUrl = uploadedUrl || 'indexeddb:hero_video';
+
       const updated = {
         ...config,
         hero: {
           ...config.hero,
           videoType: 'file',
-          videoUrl: 'indexeddb:hero_video'
+          videoUrl: videoUrl
         }
       };
       setConfig(updated);
@@ -546,14 +550,13 @@ function ContentTab() {
                               return;
                             }
                             try {
-                              const key = `menu_image_${menu.id}`;
-                              await saveAsset(key, file);
-                              
-                              const updated = [...config.menus];
-                              updated[idx].image = `indexeddb:${key}`;
-                              setConfig({ ...config, menus: updated });
-                              
-                              localStorage.setItem('geummakchang_config', JSON.stringify({ ...config, menus: updated }));
+                              const imageUrl = await processImageUpload(file, 'assets', 'menus');
+                              if (imageUrl) {
+                                const updated = [...config.menus];
+                                updated[idx].image = imageUrl;
+                                setConfig({ ...config, menus: updated });
+                                localStorage.setItem('geummakchang_config', JSON.stringify({ ...config, menus: updated }));
+                              }
                             } catch (err) {
                               console.error('Error uploading menu image:', err);
                               alert('이미지 저장 중 오류가 발생했습니다.');
@@ -940,14 +943,13 @@ function ContentTab() {
                                 return;
                               }
                               try {
-                                const key = `event_image_${event.id}`;
-                                await saveAsset(key, file);
-                                
-                                const updated = [...config.events];
-                                updated[idx].image = `indexeddb:${key}`;
-                                setConfig({ ...config, events: updated });
-                                
-                                localStorage.setItem('geummakchang_config', JSON.stringify({ ...config, events: updated }));
+                                const imageUrl = await processImageUpload(file, 'assets', 'events');
+                                if (imageUrl) {
+                                  const updated = [...config.events];
+                                  updated[idx].image = imageUrl;
+                                  setConfig({ ...config, events: updated });
+                                  localStorage.setItem('geummakchang_config', JSON.stringify({ ...config, events: updated }));
+                                }
                               } catch (err) {
                                 console.error('Error uploading event image:', err);
                                 alert('이미지 저장 중 오류가 발생했습니다.');
