@@ -183,121 +183,34 @@ function InstagramFeedSection({ instagramToken, instagramFeedUrl, customPosts })
           <p style={subtitleStyle}>
             공식 인스타그램 <strong>@geummakchang</strong>을 팔로우하시고 금막창의 맛있는 일상과 소식을 가장 먼저 받아보세요.
           </p>
-
-          {/* Mode Switcher Buttons */}
-          <div style={{ display: 'flex', justifyContent: 'center', gap: '0.75rem', marginTop: '1.5rem' }}>
-            <button
-              onClick={() => setViewMode('embed')}
-              style={{
-                padding: '0.55rem 1.3rem',
-                borderRadius: '20px',
-                fontSize: '0.9rem',
-                fontWeight: '800',
-                border: '1px solid var(--primary-gold)',
-                backgroundColor: viewMode === 'embed' ? 'var(--primary-gold)' : 'transparent',
-                color: viewMode === 'embed' ? '#ffffff' : 'var(--text-dark)',
-                cursor: 'pointer',
-                transition: 'all 0.2s ease-in-out',
-                boxShadow: viewMode === 'embed' ? '0 4px 12px rgba(217, 119, 6, 0.3)' : 'none'
-              }}
-            >
-              🌐 인스타그램 공식 실시간 화면
-            </button>
-            <button
-              onClick={() => setViewMode('grid')}
-              style={{
-                padding: '0.55rem 1.3rem',
-                borderRadius: '20px',
-                fontSize: '0.9rem',
-                fontWeight: '800',
-                border: '1px solid var(--primary-gold)',
-                backgroundColor: viewMode === 'grid' ? 'var(--primary-gold)' : 'transparent',
-                color: viewMode === 'grid' ? '#ffffff' : 'var(--text-dark)',
-                cursor: 'pointer',
-                transition: 'all 0.2s ease-in-out',
-                boxShadow: viewMode === 'grid' ? '0 4px 12px rgba(217, 119, 6, 0.3)' : 'none'
-              }}
-            >
-              📷 3x2 피드 갤러리
-            </button>
-          </div>
         </div>
 
-        {/* View Mode 1: 3x2 Grid */}
-        {viewMode === 'grid' && (
-          <div style={gridStyle} className="insta-grid-responsive">
-            {posts.map((post, idx) => (
-              <a
-                key={post.id || idx}
-                href={post.link || 'https://www.instagram.com/geummakchang/'}
-                target="_blank"
-                rel="noopener noreferrer"
-                style={cardStyle}
-                className="insta-card-hover"
-              >
-              <img src={post.image} alt="금막창 인스타그램 게시물" style={imageStyle} />
-              
-              {/* Dark Hover Mask */}
-              <div style={overlayStyle} className="insta-overlay">
-                {/* Instagram Icon */}
-                <div style={instaIconWrapperStyle}>
-                  <svg 
-                    viewBox="0 0 24 24" 
-                    width="28" 
-                    height="28" 
-                    stroke="var(--primary-gold)" 
-                    strokeWidth="2" 
-                    fill="none" 
-                    strokeLinecap="round" 
-                    strokeLinejoin="round"
-                  >
-                    <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
-                    <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
-                    <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
-                  </svg>
-                </div>
-
-                {/* Caption preview */}
-                <p style={captionStyle}>{post.caption}</p>
-
-                {/* Stats */}
-                <div style={statsRowStyle}>
-                  <span style={statItemStyle}>
-                    <Heart size={16} fill="var(--primary-gold)" color="var(--primary-gold)" />
-                    <span>{post.likes}</span>
-                  </span>
-                  <span style={statItemStyle}>
-                    <MessageCircle size={16} fill="#ffffff" color="#ffffff" />
-                    <span>{post.comments}</span>
-                  </span>
-                </div>
-              </div>
-            </a>
-          ))}
+        {/* Official Live Instagram Content Container */}
+        <div style={{
+          display: 'flex',
+          justifyContent: 'center',
+          width: '100%',
+          marginTop: '1.5rem',
+          marginBottom: '2.5rem'
+        }}>
+          <iframe
+            src="https://www.instagram.com/geummakchang/embed"
+            width="100%"
+            height="720"
+            frameBorder="0"
+            scrolling="no"
+            allowTransparency="true"
+            style={{
+              maxWidth: '920px',
+              borderRadius: '20px',
+              border: '1px solid var(--border-color)',
+              boxShadow: '0 10px 30px rgba(0,0,0,0.06)',
+              backgroundColor: '#ffffff',
+              overflow: 'hidden'
+            }}
+            title="금막창 공식 인스타그램 실시간 피드"
+          ></iframe>
         </div>
-        )}
-
-        {/* View Mode 2: Official Live Instagram Screen Embed */}
-        {viewMode === 'embed' && (
-          <div style={{ marginBottom: '3rem', display: 'flex', justifyContent: 'center' }}>
-            <iframe
-              src="https://www.instagram.com/geummakchang/embed"
-              width="100%"
-              height="650"
-              frameBorder="0"
-              scrolling="no"
-              allowTransparency="true"
-              style={{
-                maxWidth: '900px',
-                borderRadius: '16px',
-                border: '1px solid var(--border-color)',
-                boxShadow: 'var(--shadow-md)',
-                backgroundColor: '#ffffff'
-              }}
-              title="Official Geum Makchang Instagram Live Feed"
-            ></iframe>
-          </div>
-        )}
 
         {/* Instagram Follow Button CTA */}
         <div style={ctaWrapperStyle}>
