@@ -193,6 +193,24 @@ function Home({ openAuth, isLoggedIn, userEmail, handleLogout }) {
     };
   }, [config]);
 
+  // Mobile video auto-play trigger ref
+  const videoRef = React.useRef(null);
+
+  useEffect(() => {
+    const playVideo = () => {
+      if (videoRef.current) {
+        videoRef.current.play().catch(() => {});
+      }
+    };
+    playVideo();
+    window.addEventListener('touchstart', playVideo, { once: true });
+    window.addEventListener('click', playVideo, { once: true });
+    return () => {
+      window.removeEventListener('touchstart', playVideo);
+      window.removeEventListener('click', playVideo);
+    };
+  }, [indexedVideoUrl, config]);
+
   // Helper to extract YouTube ID
   const getYoutubeId = useCallback((url) => {
     if (!url) return '';
@@ -289,6 +307,7 @@ function Home({ openAuth, isLoggedIn, userEmail, handleLogout }) {
           </div>
         ) : (
           <video 
+            ref={videoRef}
             autoPlay 
             muted 
             loop 
@@ -297,7 +316,6 @@ function Home({ openAuth, isLoggedIn, userEmail, handleLogout }) {
             x5-playsinline="true"
             preload="auto"
             style={videoBackgroundElementStyle}
-            poster="/geummakchang_main.png"
             key={indexedVideoUrl || config.hero.videoUrl}
           >
             <source 
