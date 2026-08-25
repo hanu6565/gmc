@@ -295,6 +295,17 @@ function ContentTab() {
           <Award size={16} />
           <span>이벤트 / 소식</span>
         </button>
+        <button 
+          onClick={() => { setActiveSubTab('instagram'); setValidationError(''); }}
+          style={{ ...subTabBtnStyle, borderBottom: activeSubTab === 'instagram' ? '2px solid var(--primary-gold)' : 'none', color: activeSubTab === 'instagram' ? 'var(--primary-gold-hover)' : 'var(--text-muted)' }}
+        >
+          <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" strokeWidth="2" fill="none">
+            <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+            <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+            <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+          </svg>
+          <span>인스타그램 연동</span>
+        </button>
       </div>
 
       {/* Dynamic Sub Tab Contents */}
@@ -1081,6 +1092,69 @@ function ContentTab() {
             >
               <Save size={18} />
               <span>이벤트 카드 설정 저장</span>
+            </button>
+          </div>
+        )}
+
+        {/* SUBTAB: INSTAGRAM API SYNC */}
+        {activeSubTab === 'instagram' && (
+          <div style={formGridStyle}>
+            <h3 style={sectionTitleStyle}>인스타그램 실시간 자동 연동 설정</h3>
+            
+            <div style={{
+              backgroundColor: '#f8fafc',
+              border: '1px solid #cbd5e1',
+              borderRadius: '12px',
+              padding: '1.25rem',
+              fontSize: '0.88rem',
+              color: '#334155',
+              lineHeight: '1.6'
+            }}>
+              <strong style={{ color: '#0f172a', display: 'block', marginBottom: '0.5rem' }}>
+                💡 인스타그램 실시간 자동 연동 2가지 방법
+              </strong>
+              <ul style={{ paddingLeft: '1.2rem', margin: 0 }}>
+                <li style={{ marginBottom: '0.4rem' }}>
+                  <strong>방법 1 (추천 - 노코드 자동 연동)</strong>: <a href="https://behold.so" target="_blank" rel="noreferrer" style={{ color: '#2563eb', textDecoration: 'underline' }}>Behold.so</a> 또 인스타그램 연동 서비스에서 1초 계정 로그인 후 발급되는 <code>JSON Feed URL</code>을 아래 2번 입력란에 붙여넣어 주세요.
+                </li>
+                <li>
+                  <strong>방법 2 (Meta 공식 API 연동)</strong>: 개발자 메타 포털(Meta for Developers)에서 발급받은 <code>Instagram Long-Lived Access Token</code>을 1번 입력란에 붙여넣어 주세요.
+                </li>
+              </ul>
+              <span style={{ fontSize: '0.8rem', color: '#64748b', display: 'block', marginTop: '0.75rem' }}>
+                * 토큰이나 URL이 미설정 상태일 때는 고화질 시그니처 6종 갤러리 피드가 기본 보존되어 안심하고 사용하실 수 있습니다.
+              </span>
+            </div>
+
+            <div style={inputGroupStyle}>
+              <label style={labelStyle}>1. Meta Instagram Access Token (공식 API)</label>
+              <input 
+                type="text" 
+                value={config.instagramToken || ''} 
+                onChange={(e) => setConfig({ ...config, instagramToken: e.target.value })}
+                placeholder="예: IGQJ..."
+                style={inputStyle}
+              />
+            </div>
+
+            <div style={inputGroupStyle}>
+              <label style={labelStyle}>2. Instagram Feed API URL (Behold.so / EmbedSocial / 커스텀 JSON)</label>
+              <input 
+                type="text" 
+                value={config.instagramFeedUrl || ''} 
+                onChange={(e) => setConfig({ ...config, instagramFeedUrl: e.target.value })}
+                placeholder="예: https://behold.so/api/v1/feed/YOUR_FEED_ID"
+                style={inputStyle}
+              />
+            </div>
+
+            <button 
+              onClick={() => handleSave(config)} 
+              className="btn-gold" 
+              style={{ ...saveBtnStyle, marginTop: '1rem' }}
+            >
+              <Save size={18} />
+              <span>인스타그램 연동 설정 저장</span>
             </button>
           </div>
         )}

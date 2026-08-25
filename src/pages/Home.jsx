@@ -729,7 +729,10 @@ function Home({ openAuth, isLoggedIn, userEmail, userName, isAdmin, handleLogout
       </section>
 
       {/* SECTION: INSTAGRAM FEED (3x2 Grid) */}
-      <InstagramFeedSection />
+      <InstagramFeedSection 
+        instagramToken={config?.instagramToken} 
+        instagramFeedUrl={config?.instagramFeedUrl} 
+      />
 
       {/* SECTION 7: FRANCHISE INQUIRY (LIGHT CRM LEAD INTAKE) */}
       <section style={franchiseSectionStyle}>
