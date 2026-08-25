@@ -5,7 +5,7 @@ function InstagramFeedSection({ instagramToken, instagramFeedUrl, customPosts })
   const fallbackPosts = [
     {
       id: 1,
-      image: '/geummakchang_proof.jpg',
+      image: '/insta/post1.svg',
       caption: '나무꾼 햄찌가 금막창을 얻게 된 비밀 🪓✨ 전국 최초 누룩소금 숙성막창 이야기! #금막창 #나무꾼햄찌 #누룩소금막창',
       likes: 524,
       comments: 48,
@@ -13,7 +13,7 @@ function InstagramFeedSection({ instagramToken, instagramFeedUrl, customPosts })
     },
     {
       id: 2,
-      image: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=600&auto=format&fit=crop&q=80',
+      image: '/insta/post2.svg',
       caption: '📍 전국최초 누룩소금 숙성막창 금막창 대구 종로점 맑은 하늘 아래 오픈 현장! #대구막창맛집 #금막창종로점 #동성로술집',
       likes: 612,
       comments: 54,
@@ -21,7 +21,7 @@ function InstagramFeedSection({ instagramToken, instagramFeedUrl, customPosts })
     },
     {
       id: 3,
-      image: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=600&auto=format&fit=crop&q=80',
+      image: '/insta/post3.svg',
       caption: '붉은 막이 걷히며 베일을 벗은 금막창 대구 종로 본점! 웅장한 입체 간판 공개 🚁✨ #금막창 #대구핫플 #막창다이닝',
       likes: 789,
       comments: 63,
@@ -29,7 +29,7 @@ function InstagramFeedSection({ instagramToken, instagramFeedUrl, customPosts })
     },
     {
       id: 4,
-      image: 'https://images.unsplash.com/photo-1590846406792-0adc7f938f1d?w=600&auto=format&fit=crop&q=80',
+      image: '/insta/post4.svg',
       caption: '대구 종로 맛집 거리 중심에 위치한 금막창! 시원한 모퉁이 외관 전경 🏢 #대구종로맛집 #종로막창 #동성로맛집',
       likes: 495,
       comments: 37,
@@ -37,7 +37,7 @@ function InstagramFeedSection({ instagramToken, instagramFeedUrl, customPosts })
     },
     {
       id: 5,
-      image: 'https://images.unsplash.com/photo-1543007630-9710e4a00a20?w=600&auto=format&fit=crop&q=80',
+      image: '/insta/post5.svg',
       caption: '삼성팬이면 무조건! 💙 라이온즈 팬들의 유쾌하고 신나는 금막창 승리 기원 단체 회식 현장 🍻 #삼성라이온즈 #금막창회식',
       likes: 842,
       comments: 91,
@@ -45,7 +45,7 @@ function InstagramFeedSection({ instagramToken, instagramFeedUrl, customPosts })
     },
     {
       id: 6,
-      image: 'https://images.unsplash.com/photo-1544025162-d76694265947?w=600&auto=format&fit=crop&q=80',
+      image: '/insta/post6.svg',
       caption: '특허받은 누룩소금 저온숙성 공법으로 육질이 극상으로 부드러운 직화 막창 구이 ♨️ #누룩소금숙성막창 #대나무참숯초벌',
       likes: 673,
       comments: 42,
@@ -194,160 +194,7 @@ function InstagramFeedSection({ instagramToken, instagramFeedUrl, customPosts })
               style={cardStyle}
               className="insta-card-hover"
             >
-              {/* Special custom thumbnail renderer for Post #1 (Black Typo Card "나무꾼 햄찌가 금막창을 얻게 된 비밀") */}
-              {idx === 0 && !isLive ? (
-                <div style={{
-                  width: '100%',
-                  height: '100%',
-                  backgroundColor: '#0a0a0a',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  justifyContent: 'space-between',
-                  padding: '2rem 1.5rem',
-                  color: '#ffffff',
-                  boxSizing: 'border-box',
-                  position: 'relative'
-                }}>
-                  {/* Top stamp */}
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-                    <div style={{
-                      border: '1.5px solid #d97706',
-                      borderRadius: '4px',
-                      padding: '0.15rem 0.35rem',
-                      fontSize: '0.65rem',
-                      color: '#f59e0b',
-                      fontWeight: '800',
-                      letterSpacing: '0.05rem'
-                    }}>
-                      누룩소금
-                    </div>
-                    <span style={{ fontSize: '1.1rem', fontWeight: '900', letterSpacing: '0.1rem', color: '#ffffff' }}>
-                      금막창
-                    </span>
-                    <span style={{
-                      backgroundColor: '#dc2626',
-                      color: '#ffffff',
-                      fontSize: '0.6rem',
-                      padding: '0.1rem 0.25rem',
-                      borderRadius: '2px',
-                      fontWeight: '900'
-                    }}>印</span>
-                  </div>
-
-                  {/* Center Main Typo */}
-                  <div style={{ textAlign: 'left', margin: 'auto 0' }}>
-                    <h3 style={{
-                      fontSize: '1.65rem',
-                      fontWeight: '900',
-                      lineHeight: '1.35',
-                      color: '#ffffff',
-                      letterSpacing: '-0.02rem'
-                    }}>
-                      나무꾼 햄찌가<br />
-                      <span style={{ borderBottom: '3px solid #ffffff', paddingBottom: '2px' }}>금막창을 얻게 된 비밀.</span>
-                    </h3>
-                  </div>
-
-                  {/* Bottom tagline */}
-                  <div style={{ fontSize: '0.75rem', color: '#a1a1aa', fontWeight: '600' }}>
-                    @geummakchang
-                  </div>
-                </div>
-              ) : idx === 1 && !isLive ? (
-                /* Post #2: Store Exterior with Wreaths */
-                <div style={{ width: '100%', height: '100%', position: 'relative', overflow: 'hidden' }}>
-                  <img src="https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=600&auto=format&fit=crop&q=80" alt="금막창 대구 종로점 외관" style={imageStyle} />
-                  <div style={{
-                    position: 'absolute',
-                    top: 0,
-                    left: 0,
-                    right: 0,
-                    backgroundColor: 'rgba(0,0,0,0.45)',
-                    padding: '0.75rem 1rem',
-                    color: '#ffffff',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between'
-                  }}>
-                    <span style={{ fontSize: '0.8rem', fontWeight: '800', color: '#f59e0b' }}>📍 금막창 대구 종로점</span>
-                    <span style={{ fontSize: '0.7rem', backgroundColor: '#dc2626', padding: '0.15rem 0.4rem', borderRadius: '4px', fontWeight: '700' }}>GRAND OPEN</span>
-                  </div>
-                  <div style={{
-                    position: 'absolute',
-                    bottom: 0,
-                    left: 0,
-                    right: 0,
-                    backgroundColor: 'rgba(15, 23, 42, 0.85)',
-                    padding: '0.75rem 1rem',
-                    color: '#ffffff',
-                    fontSize: '0.8rem',
-                    fontWeight: '700'
-                  }}>
-                    전국최초 누룩소금 숙성막창 🏢
-                  </div>
-                </div>
-              ) : idx === 2 && !isLive ? (
-                /* Post #3: Helicopter Red Curtain Unveiling */
-                <div style={{ width: '100%', height: '100%', position: 'relative', overflow: 'hidden' }}>
-                  <img src="https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=600&auto=format&fit=crop&q=80" alt="제막식 연출" style={imageStyle} />
-                  <div style={{
-                    position: 'absolute',
-                    top: '50%',
-                    left: '50%',
-                    transform: 'translate(-50%, -50%)',
-                    backgroundColor: 'rgba(185, 28, 28, 0.9)',
-                    padding: '0.6rem 1.2rem',
-                    borderRadius: '30px',
-                    color: '#ffffff',
-                    fontWeight: '900',
-                    fontSize: '0.85rem',
-                    boxShadow: '0 4px 15px rgba(0,0,0,0.4)',
-                    border: '1px solid #fca5a5',
-                    textAlign: 'center',
-                    whiteSpace: 'nowrap'
-                  }}>
-                    🚁 붉은 막 제막식 연출
-                  </div>
-                </div>
-              ) : idx === 3 && !isLive ? (
-                /* Post #4: Corner Building Facade under Blue Sky */
-                <div style={{ width: '100%', height: '100%', position: 'relative', overflow: 'hidden' }}>
-                  <img src="https://images.unsplash.com/photo-1590846406792-0adc7f938f1d?w=600&auto=format&fit=crop&q=80" alt="금막창 건물 모퉁이 전경" style={imageStyle} />
-                  <div style={{
-                    position: 'absolute',
-                    bottom: 0,
-                    left: 0,
-                    right: 0,
-                    background: 'linear-gradient(to top, rgba(0,0,0,0.85), transparent)',
-                    padding: '1rem',
-                    color: '#ffffff'
-                  }}>
-                    <span style={{ fontSize: '0.85rem', fontWeight: '800', color: '#fbbf24', display: 'block' }}>대구 종로 맛집거리 중심</span>
-                    <span style={{ fontSize: '0.75rem', color: '#e2e8f0' }}>중앙대로81길 43 1층</span>
-                  </div>
-                </div>
-              ) : idx === 4 && !isLive ? (
-                /* Post #5: Samsung Lions Cheer Group Photo */
-                <div style={{ width: '100%', height: '100%', position: 'relative', overflow: 'hidden' }}>
-                  <img src="https://images.unsplash.com/photo-1543007630-9710e4a00a20?w=600&auto=format&fit=crop&q=80" alt="삼성라이온즈 단체 회식" style={imageStyle} />
-                  <div style={{
-                    position: 'absolute',
-                    top: '0.75rem',
-                    left: '0.75rem',
-                    backgroundColor: '#1d4ed8',
-                    color: '#ffffff',
-                    padding: '0.25rem 0.6rem',
-                    borderRadius: '20px',
-                    fontWeight: '900',
-                    fontSize: '0.75rem',
-                    boxShadow: '0 2px 8px rgba(0,0,0,0.3)'
-                  }}>
-                    ⚾️ 삼성팬이면 무조건!
-                  </div>
-                </div>
-              ) : (
-                <img src={post.image} alt="금막창 인스타그램 게시물" style={imageStyle} />
-              )}
+              <img src={post.image} alt="금막창 인스타그램 게시물" style={imageStyle} />
               
               {/* Dark Hover Mask */}
               <div style={overlayStyle} className="insta-overlay">

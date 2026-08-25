@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 600" width="600" height="600">
+  <rect width="600" height="600" fill="#0f172a" />
+  <circle cx="300" cy="300" r="230" fill="#1e293b" stroke="#fbbf24" stroke-width="8" />
+  <circle cx="300" cy="300" r="180" fill="#b91c1c" opacity="0.8" />
+  <circle cx="300" cy="300" r="140" fill="#f97316" opacity="0.9" />
+  <circle cx="300" cy="300" r="90" fill="#fef08a" opacity="0.9" />
+  <g fill="none" stroke="#f59e0b" stroke-width="18" stroke-linecap="round">
+    <circle cx="230" cy="240" r="45" />
+    <circle cx="370" cy="240" r="45" />
+    <circle cx="300" cy="350" r="50" />
+    <circle cx="210" cy="370" r="35" />
+    <circle cx="390" cy="370" r="35" />
+  </g>
+  <rect x="0" y="0" width="600" height="60" fill="rgba(0,0,0,0.7)" />
+  <text x="300" y="38" font-family="'Noto Sans KR', sans-serif" font-size="20" font-weight="900" fill="#f59e0b" text-anchor="middle">♨️ 특허받은 누룩소금 저온숙성 직화구이</text>
+</svg>
