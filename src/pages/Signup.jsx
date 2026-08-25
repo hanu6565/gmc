@@ -142,6 +142,25 @@ function Signup() {
         throw signUpError;
       }
 
+      // Sync new member to Supabase 'customers' table for Admin CRM visibility
+      try {
+        await supabase.from('customers').insert([{
+          name: name,
+          email: email,
+          phone: phone,
+          gender: '미지정',
+          age: 30,
+          age_group: '30대',
+          grade: 'FAMILY',
+          frequency: 1,
+          total_amount: 0,
+          point: 1000,
+          register_date: new Date().toISOString().split('T')[0]
+        }]);
+      } catch (custErr) {
+        console.warn('Customer DB insert notice:', custErr);
+      }
+
       setSuccess(true);
       setLoading(false);
       

@@ -42,29 +42,55 @@ function App() {
   const [authMode, setAuthMode] = useState('login'); // 'login' or 'signup'
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userEmail, setUserEmail] = useState('');
+  const [userName, setUserName] = useState('');
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  const processUserSession = useCallback(async (session) => {
+    if (session && session.user) {
+      const user = session.user;
+      const email = user.email || '';
+      const metadata = user.user_metadata || {};
+      const displayName = metadata.name || metadata.full_name || metadata.nickname || email.split('@')[0];
+
+      // Admin check: gg.marbling@gmail.com or role: 'admin' or is_admin: true
+      const adminCheck = metadata.role === 'admin' || metadata.is_admin === true || email.toLowerCase() === 'gg.marbling@gmail.com';
+
+      setIsLoggedIn(true);
+      setUserEmail(email);
+      setUserName(displayName);
+      setIsAdmin(adminCheck);
+
+      // Auto-update user_metadata for gg.marbling@gmail.com if missing
+      if (email.toLowerCase() === 'gg.marbling@gmail.com' && (!metadata.role || !metadata.is_admin)) {
+        try {
+          await supabase.auth.updateUser({
+            data: { role: 'admin', is_admin: true }
+          });
+        } catch (e) {
+          console.warn('Failed to auto-set admin role metadata:', e);
+        }
+      }
+    } else {
+      setIsLoggedIn(false);
+      setUserEmail('');
+      setUserName('');
+      setIsAdmin(false);
+    }
+  }, []);
 
   useEffect(() => {
     // Check current active session
     supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session) {
-        setIsLoggedIn(true);
-        setUserEmail(session.user.email);
-      }
+      processUserSession(session);
     });
 
-    // Listen to changes in auth state (login, logout, token refresh)
+    // Listen to changes in auth state
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      if (session) {
-        setIsLoggedIn(true);
-        setUserEmail(session.user.email);
-      } else {
-        setIsLoggedIn(false);
-        setUserEmail('');
-      }
+      processUserSession(session);
     });
 
     return () => subscription.unsubscribe();
-  }, []);
+  }, [processUserSession]);
 
   const openAuth = useCallback((mode) => {
     setAuthMode(mode);
@@ -76,15 +102,18 @@ function App() {
   }, []);
 
   const handleLoginSuccess = useCallback((email) => {
-    setUserEmail(email);
-    setIsLoggedIn(true);
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      processUserSession(session);
+    });
     setIsAuthOpen(false);
-  }, []);
+  }, [processUserSession]);
 
   const handleLogout = useCallback(async () => {
     await supabase.auth.signOut();
     setIsLoggedIn(false);
     setUserEmail('');
+    setUserName('');
+    setIsAdmin(false);
   }, []);
 
   return (
@@ -99,6 +128,8 @@ function App() {
                   openAuth={openAuth} 
                   isLoggedIn={isLoggedIn} 
                   userEmail={userEmail} 
+                  userName={userName}
+                  isAdmin={isAdmin}
                   handleLogout={handleLogout} 
                 />
               } 
@@ -109,6 +140,8 @@ function App() {
                 <Admin 
                   isLoggedIn={isLoggedIn}
                   userEmail={userEmail}
+                  userName={userName}
+                  isAdmin={isAdmin}
                   openAuth={openAuth}
                 />
               } 

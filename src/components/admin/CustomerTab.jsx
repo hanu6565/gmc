@@ -17,28 +17,28 @@ function CustomerTab() {
   const [customers, setCustomers] = useState([]);
   const [inquiries, setInquiries] = useState([]);
 
-  // Fetch Customers from Supabase on mount
+  // Fetch Customers from Supabase on mount & listen in real time
   useEffect(() => {
     const fetchCustomers = async () => {
       try {
         const { data, error } = await supabase
           .from('customers')
           .select('*')
-          .order('id', { ascending: true });
+          .order('id', { ascending: false });
         if (data && data.length > 0) {
           const mapped = data.map(c => ({
             id: c.id,
             name: c.name,
             email: c.email,
             phone: c.phone,
-            gender: c.gender,
-            age: c.age,
-            ageGroup: c.age_group,
-            grade: c.grade,
-            frequency: c.frequency,
-            totalAmount: c.total_amount,
-            point: c.point,
-            registerDate: c.register_date,
+            gender: c.gender || '미지정',
+            age: c.age || 30,
+            ageGroup: c.age_group || '30대',
+            grade: c.grade || 'FAMILY',
+            frequency: c.frequency || 1,
+            totalAmount: c.total_amount || 0,
+            point: c.point || 1000,
+            registerDate: c.register_date || new Date().toISOString().split('T')[0],
             recentPurchases: c.recent_purchases || []
           }));
           setCustomers(mapped);
@@ -51,6 +51,22 @@ function CustomerTab() {
       }
     };
     fetchCustomers();
+
+    // Realtime listener for new customer signups
+    const channel = supabase
+      .channel('crm-customers-changes')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'customers' },
+        () => {
+          fetchCustomers();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, []);
 
   // Fetch Inquiries from Supabase on mount and listen to updates in real time

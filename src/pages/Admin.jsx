@@ -7,8 +7,43 @@ import ContentTab from '../components/admin/ContentTab';
 import PopupTab from '../components/admin/PopupTab';
 import { User, Bell, ChevronDown } from 'lucide-react';
 
-function Admin({ isLoggedIn, userEmail, openAuth }) {
+import { Link } from 'react-router-dom';
+
+function Admin({ isLoggedIn, userEmail, userName, isAdmin, openAuth }) {
   const [activeTab, setActiveTab] = useState('dashboard');
+
+  const displayName = userName || (userEmail ? userEmail.split('@')[0] : '최고관리자');
+
+  // Guard for non-admin users
+  if (!isAdmin) {
+    return (
+      <div style={{
+        minHeight: '100vh',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: 'var(--bg-primary)',
+        padding: '2rem',
+        textAlign: 'center'
+      }}>
+        <h2 style={{ fontSize: '1.8rem', fontWeight: '800', color: 'var(--text-dark)', marginBottom: '0.8rem' }}>
+          관리자 접근 권한이 제한되었습니다
+        </h2>
+        <p style={{ color: 'var(--text-muted)', marginBottom: '1.5rem', maxWidth: '400px', lineHeight: '1.6' }}>
+          관리자 모드는 최고관리자 계정으로 로그인한 경우에만 접근하실 수 있습니다.
+        </p>
+        <div style={{ display: 'flex', gap: '1rem' }}>
+          <Link to="/login" className="btn-gold" style={{ padding: '0.75rem 1.5rem', textDecoration: 'none' }}>
+            관리자 계정으로 로그인
+          </Link>
+          <Link to="/" className="btn-dark" style={{ padding: '0.75rem 1.5rem', textDecoration: 'none' }}>
+            홈으로 돌아가기
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   const renderTabContent = () => {
     switch (activeTab) {
@@ -37,7 +72,7 @@ function Admin({ isLoggedIn, userEmail, openAuth }) {
         {/* Top Header Bar */}
         <header style={topHeaderStyle}>
           <div style={welcomeTextStyle}>
-            <span>환영합니다, <strong>{isLoggedIn ? userEmail.split('@')[0] : '최고관리자'}</strong>님</span>
+            <span>환영합니다, <strong>{displayName}</strong>님 (최고관리자)</span>
           </div>
 
           <div style={adminHeaderActionsStyle}>
@@ -48,7 +83,7 @@ function Admin({ isLoggedIn, userEmail, openAuth }) {
               <div style={avatarStyle}>
                 <User size={18} />
               </div>
-              <span style={adminNameStyle}>{isLoggedIn ? userEmail.split('@')[0] : 'Admin'}</span>
+              <span style={adminNameStyle}>{displayName}</span>
               <ChevronDown size={14} style={{ color: 'var(--text-muted)' }} />
             </div>
           </div>

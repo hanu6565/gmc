@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Settings, LogOut, UserPlus, Menu, X } from 'lucide-react';
 
-function Header({ openAuth, isLoggedIn, userEmail, handleLogout }) {
+function Header({ openAuth, isLoggedIn, userEmail, userName, isAdmin, handleLogout }) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const scrollToSection = (id) => {
@@ -12,6 +12,8 @@ function Header({ openAuth, isLoggedIn, userEmail, handleLogout }) {
       element.scrollIntoView({ behavior: 'smooth' });
     }
   };
+
+  const displayName = userName || (userEmail ? userEmail.split('@')[0] : '');
 
   return (
     <header style={headerStyle}>
@@ -35,16 +37,19 @@ function Header({ openAuth, isLoggedIn, userEmail, handleLogout }) {
 
         {/* Desktop Action Buttons */}
         <div style={actionsStyle} className="desktop-actions">
-          <Link to="/admin" className="btn-outline-gold" style={adminBtnStyle}>
-            <Settings size={16} />
-            <span>관리자 모드</span>
-          </Link>
-
-          <span style={dividerStyle}></span>
+          {isAdmin && (
+            <>
+              <Link to="/admin" className="btn-outline-gold" style={adminBtnStyle}>
+                <Settings size={16} />
+                <span>관리자 모드</span>
+              </Link>
+              <span style={dividerStyle}></span>
+            </>
+          )}
 
           {isLoggedIn ? (
             <div style={userSectionStyle}>
-              <span style={userEmailStyle}>{userEmail.split('@')[0]}님</span>
+              <span style={userEmailStyle}>{displayName}님</span>
               <button onClick={handleLogout} className="btn-dark" style={authBtnStyle}>
                 <LogOut size={15} />
                 <span>로그아웃</span>
@@ -93,14 +98,16 @@ function Header({ openAuth, isLoggedIn, userEmail, handleLogout }) {
           </nav>
 
           <div style={{ padding: '1rem 0 0.5rem 0', borderTop: '1px solid var(--border-color)', display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
-            <Link to="/admin" onClick={() => setIsMobileMenuOpen(false)} className="btn-outline-gold" style={{ width: '100%', justifyContent: 'center' }}>
-              <Settings size={16} />
-              <span>관리자 모드</span>
-            </Link>
+            {isAdmin && (
+              <Link to="/admin" onClick={() => setIsMobileMenuOpen(false)} className="btn-outline-gold" style={{ width: '100%', justifyContent: 'center' }}>
+                <Settings size={16} />
+                <span>관리자 모드</span>
+              </Link>
+            )}
 
             {isLoggedIn ? (
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: '0.5rem' }}>
-                <span style={{ fontSize: '0.95rem', fontWeight: '600', color: 'var(--text-dark)' }}>{userEmail}</span>
+                <span style={{ fontSize: '0.95rem', fontWeight: '600', color: 'var(--text-dark)' }}>{displayName}님</span>
                 <button onClick={() => { handleLogout(); setIsMobileMenuOpen(false); }} className="btn-dark" style={{ padding: '0.5rem 1rem' }}>
                   <LogOut size={15} />
                   <span>로그아웃</span>

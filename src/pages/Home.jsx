@@ -7,7 +7,7 @@ import { getAsset } from '../utils/db';
 import { supabase } from '../utils/supabase';
 import DbImage from '../components/DbImage';
 
-function Home({ openAuth, isLoggedIn, userEmail, handleLogout }) {
+function Home({ openAuth, isLoggedIn, userEmail, userName, isAdmin, handleLogout }) {
   const [config, setConfig] = useState(null);
   const [activeMenuId, setActiveMenuId] = useState(null); // Accordion menu selector
   const [selectedStoreIndex, setSelectedStoreIndex] = useState(0); // Multi-store tab index
@@ -300,6 +300,8 @@ function Home({ openAuth, isLoggedIn, userEmail, handleLogout }) {
         openAuth={openAuth} 
         isLoggedIn={isLoggedIn} 
         userEmail={userEmail} 
+        userName={userName}
+        isAdmin={isAdmin}
         handleLogout={handleLogout} 
       />
 
