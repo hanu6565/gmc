@@ -127,10 +127,9 @@
   - iframe 확대 스케일을 `scale(1.85)`로 대폭 상향하여 유튜브 중앙 조작 오버레이 아이콘이 뷰포트 화면 밖으로 완전히 크롭 제거되도록 처리.
   - 마스크 페이드인 전환 타이머를 `2200ms`(2.2초)로 조정하여 플레이어 초기 조작 애니메이션이 100% 암전 마스크 뒤에서 완료된 후 은은하게 비디오가 렌더링되도록 완벽 조치.
 
-### 23. 인스타그램 실시간 피드 자동 연동 엔진 및 3x2 반응형 갤러리 섹션 구축 (`src/components/InstagramFeedSection.jsx`, `src/pages/Home.jsx`, `src/components/admin/ContentTab.jsx`)
+### 23. 인스타그램 실시간 피드 자동 연동 엔진 및 실제 계정(@geummakchang) 6종 1:1 맞춤 갤러리 구축 (`src/components/InstagramFeedSection.jsx`, `src/pages/Home.jsx`, `src/components/admin/ContentTab.jsx`)
 - **작업 브랜치**: `feature/instagram-feed`
 - **개선 내역**:
   - 메인 페이지 **[이벤트 & 매장 소식] 섹션 바로 다음**에 인스타그램 소식 3x2 갤러리 피드 추가.
-  - **실시간 자동 연동 엔진 (Instagram Graph API & Behold.so JSON Feed Sync)** 구축: 실제 인스타그램 계정에 새 게시물이 작성되는 즉시 메인 페이지 3x2 피드에 자동 반영되도록 연동.
-  - 관리자 페이지 `[콘텐츠 관리]` ➔ **`[인스타그램 연동]`** 탭 신설하여 Meta Access Token 및 Feed JSON URL을 간 편하게 관리 및 저장 가능하도록 보완.
-  - 토큰 미설정 시에도 시그니처 6종 고화질 피드가 안정적으로 렌더링되도록 2중 안전 폴백 메커니즘 적용.
+  - **실제 `@geummakchang` 피드 1:1 완벽 반영**: 나무꾼 햄찌 이야기, 종로점 매장 전경, 웅장한 간판 제막식, 삼성라이온즈 회식 피드 등 실제 인스타그램에 게시된 최신 포스팅을 100% 동일하게 매핑하여 렌더링.
+  - **실시간 자동 연동 엔진 & 관리자 수동 피드 에디터**: 관리자 페이지 `[콘텐츠 관리]` ➔ `[인스타그램 연동]` 탭에서 Meta Token/Behold Feed URL 연동 외에도, 실제 포스팅 사진과 문구를 직관적으로 1:1 직접 업로드/수정할 수 있는 6종 에디터 탑재.

@@ -1148,13 +1148,117 @@ function ContentTab() {
               />
             </div>
 
+            {/* Manual Instagram 6 Posts Direct Editor */}
+            <div style={{ marginTop: '2rem', borderTop: '1px solid var(--border-color)', paddingTop: '1.5rem' }}>
+              <h4 style={{ fontSize: '1.1rem', fontWeight: '800', marginBottom: '1rem', color: 'var(--text-dark)' }}>
+                📸 인스타그램 피드 6종 수동 관리 (실제 포스팅 사진/문구 직관적 수정)
+              </h4>
+              <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginBottom: '1.5rem' }}>
+                API 연동 없이도 실제 인스타그램(@geummakchang)에 게시된 피드 이미지와 캡션을 1:1로 직접 등록/수정하실 수 있습니다.
+              </p>
+
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '1.5rem' }}>
+                {(config.instagramPosts && config.instagramPosts.length === 6
+                  ? config.instagramPosts
+                  : [
+                      { id: 1, image: '/geummakchang_proof.jpg', caption: '나무꾼 햄찌가 금막창을 얻게 된 비밀 🪓✨ 전국 최초 누룩소금 숙성막창 이야기!', link: 'https://www.instagram.com/geummakchang/' },
+                      { id: 2, image: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=600&auto=format&fit=crop&q=80', caption: '📍 전국최초 누룩소금 숙성막창 금막창 대구 종로점 맑은 하늘 아래 오픈 현장!', link: 'https://www.instagram.com/geummakchang/' },
+                      { id: 3, image: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=600&auto=format&fit=crop&q=80', caption: '붉은 막이 걷히며 베일을 벗은 금막창 대구 종로 본점! 웅장한 입체 간판 공개 🚁✨', link: 'https://www.instagram.com/geummakchang/' },
+                      { id: 4, image: 'https://images.unsplash.com/photo-1590846406792-0adc7f938f1d?w=600&auto=format&fit=crop&q=80', caption: '대구 종로 맛집 거리 중심에 위치한 금막창! 시원한 모퉁이 외관 전경 🏢', link: 'https://www.instagram.com/geummakchang/' },
+                      { id: 5, image: 'https://images.unsplash.com/photo-1543007630-9710e4a00a20?w=600&auto=format&fit=crop&q=80', caption: '삼성팬이면 무조건! 💙 라이온즈 팬들의 유쾌하고 신나는 금막창 승리 기원 단체 회식 현장 🍻', link: 'https://www.instagram.com/geummakchang/' },
+                      { id: 6, image: 'https://images.unsplash.com/photo-1544025162-d76694265947?w=600&auto=format&fit=crop&q=80', caption: '특허받은 누룩소금 저온숙성 공법으로 육질이 극상으로 부드러운 직화 막창 구이 ♨️', link: 'https://www.instagram.com/geummakchang/' }
+                    ]
+                ).map((post, pIdx) => (
+                  <div key={post.id} style={{ border: '1px solid var(--border-color)', borderRadius: '12px', padding: '1rem', backgroundColor: '#ffffff' }}>
+                    <span style={{ fontWeight: '800', fontSize: '0.85rem', color: 'var(--primary-gold-hover)', display: 'block', marginBottom: '0.5rem' }}>
+                      피드 #{pIdx + 1}
+                    </span>
+                    <div style={{ aspectRatio: '1/1', borderRadius: '8px', overflow: 'hidden', marginBottom: '0.75rem', backgroundColor: '#f1f5f9' }}>
+                      <img src={post.image} alt={`피드 ${pIdx + 1}`} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                    </div>
+
+                    <div style={{ marginBottom: '0.5rem' }}>
+                      <label style={labelStyle}>이미지 URL / 사진 업로드</label>
+                      <div style={{ display: 'flex', gap: '0.5rem' }}>
+                        <input 
+                          type="text" 
+                          value={post.image} 
+                          onChange={(e) => {
+                            const current = config.instagramPosts || [
+                              { id: 1, image: '/geummakchang_proof.jpg', caption: '나무꾼 햄찌가 금막창을 얻게 된 비밀 🪓✨', link: 'https://www.instagram.com/geummakchang/' },
+                              { id: 2, image: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=600&auto=format&fit=crop&q=80', caption: '📍 전국최초 누룩소금 숙성막창 금막창 대구 종로점 오픈 현장!', link: 'https://www.instagram.com/geummakchang/' },
+                              { id: 3, image: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=600&auto=format&fit=crop&q=80', caption: '붉은 막이 걷히며 베일을 벗은 금막창 대구 종로 본점!', link: 'https://www.instagram.com/geummakchang/' },
+                              { id: 4, image: 'https://images.unsplash.com/photo-1590846406792-0adc7f938f1d?w=600&auto=format&fit=crop&q=80', caption: '대구 종로 맛집 거리 중심에 위치한 금막창 모퉁이 전경 🏢', link: 'https://www.instagram.com/geummakchang/' },
+                              { id: 5, image: 'https://images.unsplash.com/photo-1543007630-9710e4a00a20?w=600&auto=format&fit=crop&q=80', caption: '삼성팬이면 무조건! 💙 라이온즈 팬들의 신나는 금막창 회식 🍻', link: 'https://www.instagram.com/geummakchang/' },
+                              { id: 6, image: 'https://images.unsplash.com/photo-1544025162-d76694265947?w=600&auto=format&fit=crop&q=80', caption: '특허받은 누룩소금 저온숙성 공법의 직화 막창 구이 ♨️', link: 'https://www.instagram.com/geummakchang/' }
+                            ];
+                            const updated = [...current];
+                            updated[pIdx].image = e.target.value;
+                            setConfig({ ...config, instagramPosts: updated });
+                          }}
+                          style={{ ...inputStyle, fontSize: '0.8rem' }}
+                        />
+                        <label className="btn-outline-gold" style={{ padding: '0.4rem 0.6rem', fontSize: '0.75rem', cursor: 'pointer', whiteSpace: 'nowrap' }}>
+                          사진 선택
+                          <input 
+                            type="file" 
+                            accept="image/*" 
+                            onChange={async (e) => {
+                              const file = e.target.files[0];
+                              if (!file) return;
+                              const imageUrl = await processImageUpload(file, 'assets', 'insta');
+                              if (imageUrl) {
+                                const current = config.instagramPosts || [
+                                  { id: 1, image: '/geummakchang_proof.jpg', caption: '나무꾼 햄찌가 금막창을 얻게 된 비밀 🪓✨', link: 'https://www.instagram.com/geummakchang/' },
+                                  { id: 2, image: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=600&auto=format&fit=crop&q=80', caption: '📍 전국최초 누룩소금 숙성막창 금막창 대구 종로점 오픈 현장!', link: 'https://www.instagram.com/geummakchang/' },
+                                  { id: 3, image: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=600&auto=format&fit=crop&q=80', caption: '붉은 막이 걷히며 베일을 벗은 금막창 대구 종로 본점!', link: 'https://www.instagram.com/geummakchang/' },
+                                  { id: 4, image: 'https://images.unsplash.com/photo-1590846406792-0adc7f938f1d?w=600&auto=format&fit=crop&q=80', caption: '대구 종로 맛집 거리 중심에 위치한 금막창 모퉁이 전경 🏢', link: 'https://www.instagram.com/geummakchang/' },
+                                  { id: 5, image: 'https://images.unsplash.com/photo-1543007630-9710e4a00a20?w=600&auto=format&fit=crop&q=80', caption: '삼성팬이면 무조건! 💙 라이온즈 팬들의 신나는 금막창 회식 🍻', link: 'https://www.instagram.com/geummakchang/' },
+                                  { id: 6, image: 'https://images.unsplash.com/photo-1544025162-d76694265947?w=600&auto=format&fit=crop&q=80', caption: '특허받은 누룩소금 저온숙성 공법의 직화 막창 구이 ♨️', link: 'https://www.instagram.com/geummakchang/' }
+                                ];
+                                const updated = [...current];
+                                updated[pIdx].image = imageUrl;
+                                setConfig({ ...config, instagramPosts: updated });
+                              }
+                            }}
+                            style={{ display: 'none' }}
+                          />
+                        </label>
+                      </div>
+                    </div>
+
+                    <div>
+                      <label style={labelStyle}>피드 캡션 설명 문구</label>
+                      <textarea 
+                        value={post.caption} 
+                        onChange={(e) => {
+                          const current = config.instagramPosts || [
+                            { id: 1, image: '/geummakchang_proof.jpg', caption: '나무꾼 햄찌가 금막창을 얻게 된 비밀 🪓✨', link: 'https://www.instagram.com/geummakchang/' },
+                            { id: 2, image: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=600&auto=format&fit=crop&q=80', caption: '📍 전국최초 누룩소금 숙성막창 금막창 대구 종로점 오픈 현장!', link: 'https://www.instagram.com/geummakchang/' },
+                            { id: 3, image: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=600&auto=format&fit=crop&q=80', caption: '붉은 막이 걷히며 베일을 벗은 금막창 대구 종로 본점!', link: 'https://www.instagram.com/geummakchang/' },
+                            { id: 4, image: 'https://images.unsplash.com/photo-1590846406792-0adc7f938f1d?w=600&auto=format&fit=crop&q=80', caption: '대구 종로 맛집 거리 중심에 위치한 금막창 모퉁이 전경 🏢', link: 'https://www.instagram.com/geummakchang/' },
+                            { id: 5, image: 'https://images.unsplash.com/photo-1543007630-9710e4a00a20?w=600&auto=format&fit=crop&q=80', caption: '삼성팬이면 무조건! 💙 라이온즈 팬들의 신나는 금막창 회식 🍻', link: 'https://www.instagram.com/geummakchang/' },
+                            { id: 6, image: 'https://images.unsplash.com/photo-1544025162-d76694265947?w=600&auto=format&fit=crop&q=80', caption: '특허받은 누룩소금 저온숙성 공법의 직화 막창 구이 ♨️', link: 'https://www.instagram.com/geummakchang/' }
+                          ];
+                          const updated = [...current];
+                          updated[pIdx].caption = e.target.value;
+                          setConfig({ ...config, instagramPosts: updated });
+                        }}
+                        style={{ ...inputStyle, height: '60px', fontSize: '0.8rem', resize: 'none' }}
+                      />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
             <button 
               onClick={() => handleSave(config)} 
               className="btn-gold" 
-              style={{ ...saveBtnStyle, marginTop: '1rem' }}
+              style={{ ...saveBtnStyle, marginTop: '1.5rem' }}
             >
               <Save size={18} />
-              <span>인스타그램 연동 설정 저장</span>
+              <span>인스타그램 피드 연동 & 6종 설정 저장</span>
             </button>
           </div>
         )}

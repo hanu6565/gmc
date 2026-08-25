@@ -1,61 +1,70 @@
 import React, { useState, useEffect } from 'react';
 import { Heart, MessageCircle, ExternalLink, RefreshCw } from 'lucide-react';
 
-function InstagramFeedSection({ instagramToken, instagramFeedUrl }) {
+function InstagramFeedSection({ instagramToken, instagramFeedUrl, customPosts }) {
   const fallbackPosts = [
     {
       id: 1,
-      image: 'https://images.unsplash.com/photo-1544025162-d76694265947?w=600&auto=format&fit=crop&q=80',
-      caption: '대나무 참숯 향 가득 배어 극강의 고소함을 자랑하는 누룩소금 저온숙성 생막창 🔥 #금막창 #막창맛집 #초벌구이',
-      likes: 342,
-      comments: 28,
+      image: '/geummakchang_proof.jpg',
+      caption: '나무꾼 햄찌가 금막창을 얻게 된 비밀 🪓✨ 전국 최초 누룩소금 숙성막창 이야기! #금막창 #나무꾼햄찌 #누룩소금막창',
+      likes: 524,
+      comments: 48,
       link: 'https://www.instagram.com/geummakchang/'
     },
     {
       id: 2,
-      image: 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=600&auto=format&fit=crop&q=80',
-      caption: '겉은 바삭하고 속은 쫄깃! 고소한 감칠맛이 폭발하는 넙적막창의 매력 😋 #대구막창 #금막창종로점',
-      likes: 419,
-      comments: 35,
+      image: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=600&auto=format&fit=crop&q=80',
+      caption: '📍 전국최초 누룩소금 숙성막창 금막창 대구 종로점 맑은 하늘 아래 오픈 현장! #대구막창맛집 #금막창종로점 #동성로술집',
+      likes: 612,
+      comments: 54,
       link: 'https://www.instagram.com/geummakchang/'
     },
     {
       id: 3,
-      image: 'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=600&auto=format&fit=crop&q=80',
-      caption: '특허받은 누룩소금 공법으로 원육 고유의 부드러움을 극대화한 명품 다이닝 👑 #금막창시그니처',
-      likes: 512,
-      comments: 42,
+      image: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=600&auto=format&fit=crop&q=80',
+      caption: '붉은 막이 걷히며 베일을 벗은 금막창 대구 종로 본점! 웅장한 입체 간판 공개 🚁✨ #금막창 #대구핫플 #막창다이닝',
+      likes: 789,
+      comments: 63,
       link: 'https://www.instagram.com/geummakchang/'
     },
     {
       id: 4,
-      image: 'https://images.unsplash.com/photo-1603048588665-791ca8aea617?w=600&auto=format&fit=crop&q=80',
-      caption: '노릇노릇 익어가는 황금빛 직화 불판 현장! 오늘 저녁 금막창에서 한 잔 어떠세요? 🍺 #회식장소추천',
-      likes: 298,
-      comments: 19,
+      image: 'https://images.unsplash.com/photo-1590846406792-0adc7f938f1d?w=600&auto=format&fit=crop&q=80',
+      caption: '대구 종로 맛집 거리 중심에 위치한 금막창! 시원한 모퉁이 외관 전경 🏢 #대구종로맛집 #종로막창 #동성로맛집',
+      likes: 495,
+      comments: 37,
       link: 'https://www.instagram.com/geummakchang/'
     },
     {
       id: 5,
-      image: 'https://images.unsplash.com/photo-1529193591184-b1d58069ecdd?w=600&auto=format&fit=crop&q=80',
-      caption: '벌집 칼집으로 쫀득함이 예술인 숯불 껍데기와 특제 막장의 미친 조합 🍯 #벌집껍데기 #막장소스',
-      likes: 387,
-      comments: 31,
+      image: 'https://images.unsplash.com/photo-1543007630-9710e4a00a20?w=600&auto=format&fit=crop&q=80',
+      caption: '삼성팬이면 무조건! 💙 라이온즈 팬들의 유쾌하고 신나는 금막창 승리 기원 단체 회식 현장 🍻 #삼성라이온즈 #금막창회식',
+      likes: 842,
+      comments: 91,
       link: 'https://www.instagram.com/geummakchang/'
     },
     {
       id: 6,
-      image: 'https://images.unsplash.com/photo-1547928576-a4a3323dce9d?w=600&auto=format&fit=crop&q=80',
-      caption: '24시간 가마솥 사골 육수로 푹 우려낸 얼큰한 한우 곱창전골로 깔끔한 마무리! 🍲 #곱창전골맛집',
-      likes: 465,
-      comments: 39,
+      image: 'https://images.unsplash.com/photo-1544025162-d76694265947?w=600&auto=format&fit=crop&q=80',
+      caption: '특허받은 누룩소금 저온숙성 공법으로 육질이 극상으로 부드러운 직화 막창 구이 ♨️ #누룩소금숙성막창 #대나무참숯초벌',
+      likes: 673,
+      comments: 42,
       link: 'https://www.instagram.com/geummakchang/'
     }
   ];
 
-  const [posts, setPosts] = useState(fallbackPosts);
+  const [posts, setPosts] = useState(() => {
+    if (customPosts && customPosts.length > 0) return customPosts;
+    return fallbackPosts;
+  });
   const [isLive, setIsLive] = useState(false);
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (customPosts && customPosts.length > 0) {
+      setPosts(customPosts);
+    }
+  }, [customPosts]);
 
   useEffect(() => {
     const token = instagramToken || import.meta.env.VITE_INSTAGRAM_TOKEN;

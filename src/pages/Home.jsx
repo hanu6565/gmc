@@ -732,6 +732,7 @@ function Home({ openAuth, isLoggedIn, userEmail, userName, isAdmin, handleLogout
       <InstagramFeedSection 
         instagramToken={config?.instagramToken} 
         instagramFeedUrl={config?.instagramFeedUrl} 
+        customPosts={config?.instagramPosts}
       />
 
       {/* SECTION 7: FRANCHISE INQUIRY (LIGHT CRM LEAD INTAKE) */}
