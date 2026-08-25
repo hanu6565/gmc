@@ -662,9 +662,9 @@ function Home({ openAuth, isLoggedIn, userEmail, userName, isAdmin, handleLogout
         <div style={sectionContainerStyle}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '3.5rem', flexWrap: 'wrap', gap: '1rem' }}>
             <div>
-              <span style={sectionTagStyle}>진행 중 혜택</span>
+              <span style={sectionTagStyle}>NEWS & EVENTS</span>
               <h2 style={{ ...sectionTitleStyle, textAlign: 'left', marginBottom: '0.25rem' }}>금막창 이벤트 & 매장 소식</h2>
-              <p style={{ fontSize: '0.9rem', color: 'var(--text-muted)' }}>가맹본부 혜택 준수를 위해 모든 프로모션은 가격 할인 없이 푸짐한 증정형(서비스 제공)으로 운영됩니다.</p>
+              <p style={{ fontSize: '0.95rem', color: 'var(--text-muted)' }}>금막창의 신규 매장 오픈 소식, 신메뉴 출시, 브랜드 공지사항 및 다채로운 혜택 소식을 한눈에 확인해 보세요.</p>
             </div>
             
             <div style={eventTabsWrapperStyle}>
