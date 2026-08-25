@@ -298,7 +298,7 @@ function Home({ openAuth, isLoggedIn, userEmail, handleLogout }) {
         {config.hero.videoType === 'youtube' && getYoutubeId(config.hero.videoUrl) ? (
           <div style={videoBackgroundWrapperStyle}>
             <iframe
-              src={`https://www.youtube.com/embed/${getYoutubeId(config.hero.videoUrl)}?autoplay=1&mute=1&loop=1&playlist=${getYoutubeId(config.hero.videoUrl)}&controls=0&showinfo=0&rel=0&modestbranding=1&iv_load_policy=3&enablejsapi=1&playsinline=1`}
+              src={`https://www.youtube.com/embed/${getYoutubeId(config.hero.videoUrl)}?autoplay=1&mute=1&loop=1&playlist=${getYoutubeId(config.hero.videoUrl)}&controls=0&showinfo=0&rel=0&modestbranding=1&iv_load_policy=3&disablekb=1&fs=0&autohide=1&enablejsapi=1&playsinline=1`}
               frameBorder="0"
               allow="autoplay; encrypted-media; picture-in-picture"
               style={videoBackgroundIframeStyle}
@@ -850,7 +850,8 @@ const videoBackgroundIframeStyle = {
   height: '56.25vw', // 16:9 Aspect Ratio
   minHeight: '100vh',
   minWidth: '177.77vh',
-  transform: 'translate(-50%, -50%)',
+  transform: 'translate(-50%, -50%) scale(1.35)',
+  pointerEvents: 'none',
   objectFit: 'cover'
 };
 
