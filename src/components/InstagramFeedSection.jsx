@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Heart, MessageCircle, ExternalLink, RefreshCw } from 'lucide-react';
 
 function InstagramFeedSection({ instagramToken, instagramFeedUrl, customPosts }) {
-  const [viewMode, setViewMode] = useState('grid'); // 'grid' or 'embed'
+  const [viewMode, setViewMode] = useState('embed'); // Default to official live screen embed
 
   const fallbackPosts = [
     {
@@ -187,36 +187,38 @@ function InstagramFeedSection({ instagramToken, instagramFeedUrl, customPosts })
           {/* Mode Switcher Buttons */}
           <div style={{ display: 'flex', justifyContent: 'center', gap: '0.75rem', marginTop: '1.5rem' }}>
             <button
-              onClick={() => setViewMode('grid')}
-              style={{
-                padding: '0.5rem 1.2rem',
-                borderRadius: '20px',
-                fontSize: '0.88rem',
-                fontWeight: '700',
-                border: '1px solid var(--primary-gold)',
-                backgroundColor: viewMode === 'grid' ? 'var(--primary-gold)' : 'transparent',
-                color: viewMode === 'grid' ? '#ffffff' : 'var(--text-dark)',
-                cursor: 'pointer',
-                transition: 'all 0.2s ease-in-out'
-              }}
-            >
-              📷 3x2 피드 갤러리
-            </button>
-            <button
               onClick={() => setViewMode('embed')}
               style={{
-                padding: '0.5rem 1.2rem',
+                padding: '0.55rem 1.3rem',
                 borderRadius: '20px',
-                fontSize: '0.88rem',
-                fontWeight: '700',
+                fontSize: '0.9rem',
+                fontWeight: '800',
                 border: '1px solid var(--primary-gold)',
                 backgroundColor: viewMode === 'embed' ? 'var(--primary-gold)' : 'transparent',
                 color: viewMode === 'embed' ? '#ffffff' : 'var(--text-dark)',
                 cursor: 'pointer',
-                transition: 'all 0.2s ease-in-out'
+                transition: 'all 0.2s ease-in-out',
+                boxShadow: viewMode === 'embed' ? '0 4px 12px rgba(217, 119, 6, 0.3)' : 'none'
               }}
             >
               🌐 인스타그램 공식 실시간 화면
+            </button>
+            <button
+              onClick={() => setViewMode('grid')}
+              style={{
+                padding: '0.55rem 1.3rem',
+                borderRadius: '20px',
+                fontSize: '0.9rem',
+                fontWeight: '800',
+                border: '1px solid var(--primary-gold)',
+                backgroundColor: viewMode === 'grid' ? 'var(--primary-gold)' : 'transparent',
+                color: viewMode === 'grid' ? '#ffffff' : 'var(--text-dark)',
+                cursor: 'pointer',
+                transition: 'all 0.2s ease-in-out',
+                boxShadow: viewMode === 'grid' ? '0 4px 12px rgba(217, 119, 6, 0.3)' : 'none'
+              }}
+            >
+              📷 3x2 피드 갤러리
             </button>
           </div>
         </div>
