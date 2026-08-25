@@ -831,13 +831,13 @@ function ContentTab() {
                 onClick={() => {
                   const newEvent = {
                     id: Date.now(),
-                    title: '신규 증정 이벤트',
-                    desc: '리뷰 참여 시 음료수 1병 서비스 증정',
+                    title: '신규 매장 소식 / 이벤트',
+                    desc: '금막창의 새로운 매장 소식 및 혜택 안내입니다.',
                     image: 'https://images.unsplash.com/photo-1482049016688-2d3e1b311543?w=500&auto=format&fit=crop&q=80',
                     startDate: new Date().toISOString().split('T')[0],
                     endDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
                     status: 'ongoing',
-                    type: 'giveaway'
+                    type: 'news'
                   };
                   setConfig({ ...config, events: [newEvent, ...config.events] });
                 }}
@@ -845,7 +845,7 @@ function ContentTab() {
                 style={{ padding: '0.4rem 0.8rem', fontSize: '0.85rem' }}
               >
                 <Plus size={14} />
-                <span>새 이벤트 추가</span>
+                <span>+ 새 이벤트 / 소식 추가</span>
               </button>
             </div>
 
@@ -877,7 +877,7 @@ function ContentTab() {
 
                   <div style={{ display: 'flex', gap: '1rem', width: '100%', flexWrap: 'wrap' }}>
                     <div style={{ flex: '1 1 200px' }}>
-                      <label style={labelStyle}>이벤트 제목</label>
+                      <label style={labelStyle}>이벤트 / 소식 제목</label>
                       <input 
                         type="text" 
                         value={event.title} 
@@ -892,14 +892,15 @@ function ContentTab() {
                           updated[idx].title = e.target.value;
                           setConfig({ ...config, events: updated });
                         }}
+                        placeholder="예: 금막창 범어점 오픈 소식"
                         style={inputStyle}
                       />
                     </div>
 
                     <div style={{ flex: '1 1 200px' }}>
-                      <label style={labelStyle}>이벤트 종류</label>
+                      <label style={labelStyle}>게시물 분류 (종류)</label>
                       <select
-                        value={event.type}
+                        value={event.type || 'giveaway'}
                         onChange={(e) => {
                           const updated = [...config.events];
                           updated[idx].type = e.target.value;
@@ -907,7 +908,11 @@ function ContentTab() {
                         }}
                         style={selectStyle}
                       >
-                        <option value="giveaway">증정형 이벤트 (이벤트 규정 준수)</option>
+                        <option value="giveaway">🎁 증정형 이벤트 (이벤트 규정 준수)</option>
+                        <option value="news">📢 매장 소식 / 공지사항</option>
+                        <option value="opening">🎉 신규 매장 오픈 소식</option>
+                        <option value="menu">🍖 신메뉴 출시 소식</option>
+                        <option value="promotion">✨ 프로모션 / 혜택 안내</option>
                       </select>
                     </div>
                   </div>

@@ -708,7 +708,23 @@ function Home({ openAuth, isLoggedIn, userEmail, userName, isAdmin, handleLogout
                         alt={event.title} 
                         style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
                       />
-                      <span style={eventCardBadgeStyle}>GIVEAWAY (증정)</span>
+                    {(() => {
+                      const getBadge = (type) => {
+                        switch (type) {
+                          case 'news': return { text: '📢 NEWS (매장 소식)', bg: '#2ec4b6' };
+                          case 'opening': return { text: '🎉 OPENING (매장 오픈)', bg: '#e71d36' };
+                          case 'menu': return { text: '🍖 NEW MENU (신메뉴)', bg: '#ff9f1c' };
+                          case 'promotion': return { text: '✨ PROMOTION (혜택)', bg: '#7026b9' };
+                          default: return { text: '🎁 GIVEAWAY (증정)', bg: 'var(--primary-gold)' };
+                        }
+                      };
+                      const b = getBadge(event.type);
+                      return (
+                        <span style={{ ...eventCardBadgeStyle, backgroundColor: b.bg, color: '#ffffff' }}>
+                          {b.text}
+                        </span>
+                      );
+                    })()}
                     </div>
                     <div style={eventCardBodyStyle}>
                       <span style={eventCardPeriodStyle}>{event.startDate} ~ {event.endDate}</span>
