@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import Popup from '../components/Popup';
@@ -19,7 +19,7 @@ function Home({ openAuth, isLoggedIn, userEmail, handleLogout }) {
   const [franchiseForm, setFranchiseForm] = useState({ name: '', phone: '', location: '' });
 
   // Default configuration fallback
-  const defaultData = {
+  const defaultData = useMemo(() => ({
     hero: {
       videoType: 'youtube',
       videoUrl: 'https://www.youtube.com/watch?v=P2d8N9u13U8',
@@ -96,10 +96,10 @@ function Home({ openAuth, isLoggedIn, userEmail, handleLogout }) {
         type: 'giveaway'
       }
     ]
-  };
+  }), []);
 
   // Mock static customer reviews
-  const customerReviews = [
+  const customerReviews = useMemo(() => [
     {
       author: '김*현 (방문객 리뷰)',
       score: 5,
@@ -115,7 +115,7 @@ function Home({ openAuth, isLoggedIn, userEmail, handleLogout }) {
       score: 5,
       content: '대구 갈 때마다 들리는 찐맛집! 소막창 숙성이 정말 명인 특허 받을 만합니다. 질긴 느낌이 하나도 없고 입에서 살살 녹아요. 떡볶이 기본 안주 주시는 것도 엄청 맛있어서 술이 쭉쭉 들어갑니다.'
     }
-  ];
+  ], []);
 
   // Load config on mount from Supabase
   useEffect(() => {
@@ -169,7 +169,7 @@ function Home({ openAuth, isLoggedIn, userEmail, handleLogout }) {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, []);
+  }, [defaultData]);
 
   // Load preview video from IndexedDB if active
   useEffect(() => {
@@ -194,15 +194,15 @@ function Home({ openAuth, isLoggedIn, userEmail, handleLogout }) {
   }, [config]);
 
   // Helper to extract YouTube ID
-  const getYoutubeId = (url) => {
+  const getYoutubeId = useCallback((url) => {
     if (!url) return '';
     const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
     const match = url.match(regExp);
     return (match && match[2].length === 11) ? match[2] : '';
-  };
+  }, []);
 
   // Franchise submission handler using Supabase
-  const handleFranchiseSubmit = async (e) => {
+  const handleFranchiseSubmit = useCallback(async (e) => {
     e.preventDefault();
     if (!franchiseForm.name || !franchiseForm.phone || !franchiseForm.location) {
       alert('모든 양식을 올바르게 작성해 주세요.');
@@ -245,19 +245,23 @@ function Home({ openAuth, isLoggedIn, userEmail, handleLogout }) {
       alert('네트워크 상태 문제로 인해 임시 저장 공간에 접수되었습니다. 신속히 안내 드리겠습니다.');
       setFranchiseForm({ name: '', phone: '', location: '' });
     }
-  };
+  }, [franchiseForm]);
 
   // Carousel controls
-  const handlePrevReview = () => {
+  const handlePrevReview = useCallback(() => {
     setReviewIndex(prev => (prev === 0 ? customerReviews.length - 1 : prev - 1));
-  };
-  const handleNextReview = () => {
+  }, [customerReviews.length]);
+
+  const handleNextReview = useCallback(() => {
     setReviewIndex(prev => (prev === customerReviews.length - 1 ? 0 : prev + 1));
-  };
+  }, [customerReviews.length]);
+
+  const currentStore = useMemo(() => {
+    if (!config || !config.stores) return null;
+    return config.stores[selectedStoreIndex] || config.stores[0];
+  }, [config, selectedStoreIndex]);
 
   if (!config) return null;
-
-  const currentStore = config.stores[selectedStoreIndex] || config.stores[0];
 
   return (
     <div style={pageStyle}>
@@ -276,27 +280,36 @@ function Home({ openAuth, isLoggedIn, userEmail, handleLogout }) {
         {config.hero.videoType === 'youtube' && getYoutubeId(config.hero.videoUrl) ? (
           <div style={videoBackgroundWrapperStyle}>
             <iframe
-              src={`https://www.youtube.com/embed/${getYoutubeId(config.hero.videoUrl)}?autoplay=1&mute=1&loop=1&playlist=${getYoutubeId(config.hero.videoUrl)}&controls=0&showinfo=0&rel=0&modestbranding=1&iv_load_policy=3&enablejsapi=1`}
+              src={`https://www.youtube.com/embed/${getYoutubeId(config.hero.videoUrl)}?autoplay=1&mute=1&loop=1&playlist=${getYoutubeId(config.hero.videoUrl)}&controls=0&showinfo=0&rel=0&modestbranding=1&iv_load_policy=3&enablejsapi=1&playsinline=1`}
               frameBorder="0"
-              allow="autoplay; encrypted-media"
+              allow="autoplay; encrypted-media; picture-in-picture"
               style={videoBackgroundIframeStyle}
               title="Geum Makchang Hero Background"
             ></iframe>
           </div>
         ) : (
-          (!config.hero.videoUrl.startsWith('indexeddb:') || indexedVideoUrl) && (
-            <video 
-              autoPlay 
-              muted 
-              loop 
-              playsInline
-              style={videoBackgroundElementStyle}
-              poster="/geummakchang_main.png"
-              key={indexedVideoUrl || config.hero.videoUrl}
-            >
-              <source src={indexedVideoUrl || config.hero.videoUrl} type="video/mp4" />
-            </video>
-          )
+          <video 
+            autoPlay 
+            muted 
+            loop 
+            playsInline
+            webkit-playsinline="true"
+            x5-playsinline="true"
+            preload="auto"
+            style={videoBackgroundElementStyle}
+            poster="/geummakchang_main.png"
+            key={indexedVideoUrl || config.hero.videoUrl}
+          >
+            <source 
+              src={
+                indexedVideoUrl || 
+                (config.hero.videoUrl.startsWith('indexeddb:') 
+                  ? 'https://assets.mixkit.co/videos/preview/mixkit-chef-cooking-meat-on-a-grill-41584-large.mp4' 
+                  : config.hero.videoUrl)
+              } 
+              type="video/mp4" 
+            />
+          </video>
         )}
 
         {/* Hero Overlay */}
@@ -341,7 +354,7 @@ function Home({ openAuth, isLoggedIn, userEmail, handleLogout }) {
             <h2 style={sectionTitleStyle}>금막창 시그니처 메뉴</h2>
           </div>
 
-          <div style={menuGridStyle}>
+          <div style={menuGridStyle} className="menu-grid-responsive">
             {config.menus.slice(0, 9).map((menu) => {
               const isOpen = activeMenuId === menu.id;
               return (
@@ -400,9 +413,9 @@ function Home({ openAuth, isLoggedIn, userEmail, handleLogout }) {
       </section>
 
       {/* SECTION 3: BRAND STORY (Nuruk salt, master patent, reviews score, sauces) */}
-      <section style={storySectionStyle}>
+      <section id="brand-story" style={storySectionStyle}>
         <div style={sectionContainerStyle}>
-          <div style={storyGridStyle}>
+          <div style={storyGridStyle} className="story-grid-responsive">
             {/* Story Left: details */}
             <div style={storyLeftStyle}>
               <span style={sectionTagStyle}>브랜드 소구점</span>
@@ -474,9 +487,8 @@ function Home({ openAuth, isLoggedIn, userEmail, handleLogout }) {
                 alt="금막창이 맛을 증명하는 4가지" 
                 style={{
                   width: '100%',
-                  height: '100%',
-                  objectFit: 'cover',
-                  display: 'block'
+                  height: 'auto',
+                  objectFit: 'contain'
                 }} 
               />
             </div>
@@ -487,12 +499,10 @@ function Home({ openAuth, isLoggedIn, userEmail, handleLogout }) {
       {/* SECTION 4: STORE INFO (Multi-store manager, Google map search) */}
       <section id="store-info" style={storeSectionStyle}>
         <div style={sectionContainerStyle}>
-          <div style={{ textAlign: 'center', marginBottom: '3.5rem' }}>
+          <div style={{ textAlign: 'center', marginBottom: '2.5rem' }}>
             <span style={sectionTagStyle}>매장 안내</span>
-            <h2 style={sectionTitleStyle}>금막창 지점 안내</h2>
-            <p style={sectionDescStyle}>
-              누룩소금 숙성막창의 진짜 맛을 느껴보세요.
-            </p>
+            <h2 style={sectionTitleStyle}>금막창 직영 및 가맹 매장 정보</h2>
+            <p style={{ fontSize: '0.9rem', color: 'var(--text-muted)' }}>대구 주요 거점에서 최고의 막창 다이닝을 선사해 드립니다.</p>
           </div>
 
           {/* Tab buttons for multiple stores */}
@@ -515,8 +525,8 @@ function Home({ openAuth, isLoggedIn, userEmail, handleLogout }) {
           </div>
 
           {/* Store Info Cards and Map Grid */}
-          <div style={storeGridStyle}>
-            <div className="card-premium" style={storeDetailCardStyle}>
+          <div style={storeGridStyle} className="store-grid-responsive">
+            <div className="card-premium store-detail-responsive" style={storeDetailCardStyle}>
               <h3 style={storeTitleStyle}>금막창 {currentStore.name}</h3>
               <div style={storeInfoListStyle}>
                 <div style={storeInfoItemStyle}>
@@ -530,8 +540,12 @@ function Home({ openAuth, isLoggedIn, userEmail, handleLogout }) {
                 <div style={storeInfoItemStyle}>
                   <Phone size={18} style={storeIconStyle} />
                   <div>
-                    <span style={storeInfoLabelStyle}>대표 문의 번호</span>
-                    <p style={storeInfoValueStyle}>{currentStore.phone}</p>
+                    <span style={storeInfoLabelStyle}>대표 문의 번호 (터치 시 바로 연결)</span>
+                    <p style={storeInfoValueStyle}>
+                      <a href={`tel:${currentStore.phone.replace(/[^0-9]/g, '')}`} style={{ color: 'var(--primary-gold-hover)', textDecoration: 'underline' }}>
+                        {currentStore.phone}
+                      </a>
+                    </p>
                   </div>
                 </div>
 
@@ -554,7 +568,7 @@ function Home({ openAuth, isLoggedIn, userEmail, handleLogout }) {
             </div>
 
             {/* Live address map lookup wrapper */}
-            <div style={mapCardStyle}>
+            <div style={mapCardStyle} className="map-card-responsive">
               <iframe
                 title="Google Maps Location Lookup"
                 width="100%"
@@ -577,12 +591,12 @@ function Home({ openAuth, isLoggedIn, userEmail, handleLogout }) {
             <h2 style={sectionTitleStyle}>실시간 고객 감동 리뷰</h2>
           </div>
 
-          <div style={reviewSliderContainerStyle}>
+          <div style={reviewSliderContainerStyle} className="review-slider-responsive">
             <button onClick={handlePrevReview} style={sliderArrowBtnStyle}>
               <ChevronLeft size={24} />
             </button>
 
-            <div className="card-premium animate-fade-in" style={reviewCardStyle} key={reviewIndex}>
+            <div className="card-premium animate-fade-in review-card-responsive" style={reviewCardStyle} key={reviewIndex}>
               <div style={reviewStarRowStyle}>
                 {[...Array(customerReviews[reviewIndex].score)].map((_, i) => (
                   <Star key={i} size={20} fill="#f59e0b" color="#f59e0b" />
@@ -637,7 +651,7 @@ function Home({ openAuth, isLoggedIn, userEmail, handleLogout }) {
             </div>
           </div>
 
-          <div style={eventGridStyle}>
+          <div style={eventGridStyle} className="event-grid-responsive">
             {config.events.filter(e => e.status === activeEventTab).length > 0 ? (
               config.events
                 .filter(e => e.status === activeEventTab)

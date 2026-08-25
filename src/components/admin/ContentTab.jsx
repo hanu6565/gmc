@@ -3,7 +3,7 @@ import { Video, Type, Grid, Award, MapPin, Plus, Trash2, ArrowUp, ArrowDown, Sav
 import { supabase } from '../../utils/supabase';
 import DbImage from '../DbImage';
 import { saveAsset, getAsset } from '../../utils/db';
-import { processImageUpload } from '../../utils/imageUtils';
+import { processImageUpload, safeSetLocalStorage, validateImageFile, validateVideoFile } from '../../utils/imageUtils';
 
 function ContentTab() {
   const [activeSubTab, setActiveSubTab] = useState('hero');
@@ -66,33 +66,57 @@ function ContentTab() {
     const file = e.target.files[0];
     if (!file) return;
 
-    if (file.size > 100 * 1024 * 1024) {
-      alert('동영상 크기가 너무 큽니다. 100MB 이하의 동영상을 업로드해 주세요.');
+    const validation = validateVideoFile(file, 100);
+    if (!validation.valid) {
+      alert(validation.message);
+      setUploadStatus(validation.message.replace(/\n/g, ' '));
       return;
     }
 
-    setUploadStatus('동영상을 서버/데이터베이스에 업로드하는 중...');
+    setUploadStatus('동영상을 안전하게 저장하는 중...');
     try {
+      // 1. Save video file to local IndexedDB for fast browser playback
       await saveAsset('hero_video', file);
+
+      // 2. Attempt cloud storage upload (if configured)
       const uploadedUrl = await processImageUpload(file, 'assets', 'videos');
-      const videoUrl = uploadedUrl || 'indexeddb:hero_video';
+
+      // 3. Use public cloud URL if available; otherwise use local IndexedDB reference
+      const finalVideoUrl = (uploadedUrl && uploadedUrl.startsWith('http'))
+        ? uploadedUrl
+        : 'indexeddb:hero_video';
 
       const updated = {
         ...config,
         hero: {
           ...config.hero,
           videoType: 'file',
-          videoUrl: videoUrl
+          videoUrl: finalVideoUrl
         }
       };
+
       setConfig(updated);
       localStorage.setItem('geummakchang_config', JSON.stringify(updated));
-      setUploadStatus('업로드 완료! 홈페이지 메인 및 아래 미리보기에 즉시 적용됩니다.');
-      
+
+      // Sync config setting to Supabase DB
+      try {
+        await supabase
+          .from('configs')
+          .upsert({
+            id: 'geummakchang_config',
+            data: updated,
+            updated_at: new Date().toISOString()
+          });
+      } catch (dbErr) {
+        console.warn('Supabase DB sync notice:', dbErr);
+      }
+
+      setUploadStatus('업로드 완료! 홈페이지 메인 및 아래 미리보기에 즉시 적용되었습니다.');
+
       const localUrl = URL.createObjectURL(file);
       setPreviewVideoUrl(localUrl);
     } catch (err) {
-      console.error(err);
+      console.error('Video upload failed:', err);
       setUploadStatus('업로드 실패. 다시 시도해 주세요.');
     }
   };
@@ -545,21 +569,25 @@ function ContentTab() {
                           onChange={async (e) => {
                             const file = e.target.files[0];
                             if (!file) return;
-                            if (file.size > 15 * 1024 * 1024) {
-                              alert('이미지 크기는 15MB 이하로 선택해 주세요.');
+
+                            const validation = validateImageFile(file, 15);
+                            if (!validation.valid) {
+                              alert(validation.message);
                               return;
                             }
+
                             try {
                               const imageUrl = await processImageUpload(file, 'assets', 'menus');
                               if (imageUrl) {
-                                const updated = [...config.menus];
-                                updated[idx].image = imageUrl;
-                                setConfig({ ...config, menus: updated });
-                                localStorage.setItem('geummakchang_config', JSON.stringify({ ...config, menus: updated }));
+                                const updatedMenus = [...config.menus];
+                                updatedMenus[idx].image = imageUrl;
+                                const updatedConfig = { ...config, menus: updatedMenus };
+                                setConfig(updatedConfig);
+                                safeSetLocalStorage('geummakchang_config', updatedConfig);
                               }
                             } catch (err) {
                               console.error('Error uploading menu image:', err);
-                              alert('이미지 저장 중 오류가 발생했습니다.');
+                              alert(`[업로드 중 오류 발생]\n이미지 처리 중 문제가 발생했습니다: ${err.message || '파일을 읽을 수 없습니다.'}`);
                             }
                           }}
                           style={{ display: 'none' }}
@@ -938,21 +966,25 @@ function ContentTab() {
                             onChange={async (e) => {
                               const file = e.target.files[0];
                               if (!file) return;
-                              if (file.size > 15 * 1024 * 1024) {
-                                alert('이미지 크기는 15MB 이하로 선택해 주세요.');
+
+                              const validation = validateImageFile(file, 15);
+                              if (!validation.valid) {
+                                alert(validation.message);
                                 return;
                               }
+
                               try {
                                 const imageUrl = await processImageUpload(file, 'assets', 'events');
                                 if (imageUrl) {
-                                  const updated = [...config.events];
-                                  updated[idx].image = imageUrl;
-                                  setConfig({ ...config, events: updated });
-                                  localStorage.setItem('geummakchang_config', JSON.stringify({ ...config, events: updated }));
+                                  const updatedEvents = [...config.events];
+                                  updatedEvents[idx].image = imageUrl;
+                                  const updatedConfig = { ...config, events: updatedEvents };
+                                  setConfig(updatedConfig);
+                                  safeSetLocalStorage('geummakchang_config', updatedConfig);
                                 }
                               } catch (err) {
                                 console.error('Error uploading event image:', err);
-                                alert('이미지 저장 중 오류가 발생했습니다.');
+                                alert(`[업로드 중 오류 발생]\n이미지 처리 중 문제가 발생했습니다: ${err.message || '파일을 읽을 수 없습니다.'}`);
                               }
                             }}
                             style={{ display: 'none' }}

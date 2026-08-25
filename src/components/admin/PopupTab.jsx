@@ -3,7 +3,7 @@ import { ToggleLeft, ToggleRight, Calendar, Eye, Save, Trash2, Plus } from 'luci
 import { supabase } from '../../utils/supabase';
 import DbImage from '../DbImage';
 import { saveAsset } from '../../utils/db';
-import { processImageUpload } from '../../utils/imageUtils';
+import { processImageUpload, safeSetLocalStorage, validateImageFile } from '../../utils/imageUtils';
 
 function PopupTab() {
   const [popups, setPopups] = useState([]);
@@ -182,6 +182,7 @@ function PopupTab() {
             <div style={formGridStyle}>
               {/* Image URL Input & Preview */}
               <div style={{ flex: '1 1 250px', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                 <label style={labelStyle}>📷 팝업 이미지 업로드 & 미리보기</label>
                  <div style={{
                    width: '100%',
                    height: '180px',
@@ -198,8 +199,8 @@ function PopupTab() {
                      style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
                    />
                  </div>
+
                  <div style={inputGroupStyle}>
-                   <label style={labelStyle}>팝업 이미지 URL</label>
                    <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
                      <input 
                        type="text" 
@@ -209,8 +210,8 @@ function PopupTab() {
                          updated[idx].image = e.target.value;
                          setPopups(updated);
                        }}
-                       placeholder="https://example.com/image.jpg"
-                       style={{ ...inputStyle, flexGrow: 1 }}
+                       placeholder="이미지 URL 직접 입력 또는 우측 업로드"
+                       style={{ ...inputStyle, flexGrow: 1, fontSize: '0.85rem' }}
                      />
                      <label style={{
                        padding: '0.7rem 0.9rem',
@@ -226,29 +227,48 @@ function PopupTab() {
                        border: '1px solid var(--primary-gold)',
                        flexShrink: 0
                      }}>
-                       <span>업로드</span>
+                       <span>사진 선택</span>
                        <input 
                          type="file" 
                          accept="image/*" 
                          onChange={async (e) => {
-                            const file = e.target.files[0];
-                            if (!file) return;
-                            if (file.size > 15 * 1024 * 1024) {
-                              alert('이미지 크기는 15MB 이하로 선택해 주세요.');
-                              return;
-                            }
-                            try {
-                              const imageUrl = await processImageUpload(file, 'assets', 'popups');
-                              if (imageUrl) {
-                                const updated = [...popups];
-                                updated[idx].image = imageUrl;
-                                setPopups(updated);
-                                localStorage.setItem('geummakchang_popups', JSON.stringify(updated));
-                              }
-                            } catch (err) {
-                              console.error('Error uploading popup image:', err);
-                              alert('이미지 저장 중 오류가 발생했습니다.');
-                            }
+                             const file = e.target.files[0];
+                             if (!file) return;
+
+                             const validation = validateImageFile(file, 15);
+                             if (!validation.valid) {
+                               alert(validation.message);
+                               return;
+                             }
+
+                             try {
+                               const imageUrl = await processImageUpload(file, 'assets', 'popups');
+                               if (imageUrl) {
+                                 const updated = [...popups];
+                                 updated[idx].image = imageUrl;
+                                 setPopups(updated);
+                                 safeSetLocalStorage('geummakchang_popups', updated);
+
+                                 // Immediate DB sync
+                                 try {
+                                   await supabase
+                                     .from('configs')
+                                     .upsert({
+                                       id: 'geummakchang_popups_config',
+                                       data: {
+                                         active: isGlobalActive,
+                                         popups: updated
+                                       },
+                                       updated_at: new Date().toISOString()
+                                     });
+                                 } catch (dbErr) {
+                                   console.warn('DB sync notice:', dbErr);
+                                 }
+                               }
+                             } catch (err) {
+                               console.error('Error uploading popup image:', err);
+                               alert(`[업로드 중 오류 발생]\n이미지 처리 중 문제가 발생했습니다: ${err.message || '파일을 읽을 수 없습니다.'}`);
+                             }
                           }}
                          style={{ display: 'none' }}
                        />
@@ -257,10 +277,10 @@ function PopupTab() {
                  </div>
               </div>
 
-              {/* Text Fields */}
+              {/* Text Fields & Live Preview */}
               <div style={{ flex: '2 1 350px', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                 <div style={inputGroupStyle}>
-                  <label style={labelStyle}>팝업 제목 (헤드라인)</label>
+                  <label style={labelStyle}>✏️ 팝업 상단 제목 (헤드라인 문구)</label>
                   <input 
                     type="text" 
                     value={popup.title}
@@ -269,12 +289,13 @@ function PopupTab() {
                       updated[idx].title = e.target.value;
                       setPopups(updated);
                     }}
+                    placeholder="예: 금막창 명품 누룩숙성 런칭 기념"
                     style={inputStyle}
                   />
                 </div>
 
                 <div style={inputGroupStyle}>
-                  <label style={labelStyle}>팝업 상세 문구 (할인 표현 절대 금지)</label>
+                  <label style={labelStyle}>✏️ 팝업 하단 상세 문구 (할인 표현 금지, 증정 혜택 위주)</label>
                   <textarea 
                     value={popup.content}
                     onChange={(e) => {
@@ -282,14 +303,15 @@ function PopupTab() {
                       updated[idx].content = e.target.value;
                       setPopups(updated);
                     }}
-                    style={{ ...inputStyle, height: '100px', resize: 'none' }}
+                    placeholder="팝업 하단에 보일 본문 내용을 작성해 주세요."
+                    style={{ ...inputStyle, height: '90px', resize: 'none' }}
                   />
                 </div>
 
                 {/* Duration Dates */}
                 <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
                   <div style={{ ...inputGroupStyle, flex: 1 }}>
-                    <label style={labelStyle}>노출 시작일</label>
+                    <label style={labelStyle}>📅 노출 시작일</label>
                     <input 
                       type="date" 
                       value={popup.startDate}
@@ -303,7 +325,7 @@ function PopupTab() {
                   </div>
 
                   <div style={{ ...inputGroupStyle, flex: 1 }}>
-                    <label style={labelStyle}>노출 종료일</label>
+                    <label style={labelStyle}>📅 노출 종료일</label>
                     <input 
                       type="date" 
                       value={popup.endDate}
@@ -330,8 +352,55 @@ function PopupTab() {
                       }}
                       style={{ cursor: 'pointer' }}
                     />
-                    <span>"오늘 하루 이 팝업 보지 않기" 활성화</span>
+                    <span>"오늘 하루 이 팝업 보지 않기" 하단 버튼 표시</span>
                   </label>
+                </div>
+              </div>
+            </div>
+
+            {/* REAL-TIME POPUP LIVE PREVIEW */}
+            <div style={{
+              marginTop: '1.5rem',
+              padding: '1.25rem',
+              backgroundColor: 'var(--bg-primary)',
+              borderRadius: '12px',
+              border: '1px dashed var(--primary-gold)',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '0.75rem'
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <Eye size={18} color="var(--primary-gold-hover)" />
+                <span style={{ fontSize: '0.9rem', fontWeight: '800', color: 'var(--primary-gold-hover)' }}>
+                  실시간 방문자 팝업 렌더링 미리보기
+                </span>
+              </div>
+              <div style={{
+                width: '320px',
+                maxWidth: '100%',
+                margin: '0 auto',
+                backgroundColor: '#ffffff',
+                borderRadius: '12px',
+                boxShadow: '0 8px 24px rgba(31, 24, 21, 0.15)',
+                overflow: 'hidden',
+                border: '1px solid var(--border-color)'
+              }}>
+                {popup.image && (
+                  <div style={{ width: '100%', height: '140px', backgroundColor: 'var(--bg-secondary)', overflow: 'hidden' }}>
+                    <DbImage src={popup.image} alt={popup.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  </div>
+                )}
+                <div style={{ padding: '1rem', textAlign: 'center' }}>
+                  <h4 style={{ fontSize: '1rem', fontWeight: '800', color: 'var(--text-dark)', marginBottom: '0.4rem' }}>
+                    {popup.title || '제목 없음'}
+                  </h4>
+                  <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', lineHeight: '1.5', whiteSpace: 'pre-line' }}>
+                    {popup.content || '팝업 문구가 위치합니다.'}
+                  </p>
+                </div>
+                <div style={{ display: 'flex', borderTop: '1px solid var(--border-color)', backgroundColor: 'var(--bg-secondary)', fontSize: '0.75rem' }}>
+                  {popup.hideToday && <div style={{ flex: 1, padding: '0.5rem', textAlign: 'center', color: 'var(--text-muted)' }}>오늘 하루 보지 않기</div>}
+                  <div style={{ flex: 1, padding: '0.5rem', textAlign: 'center', color: 'var(--primary-gold-hover)', fontWeight: 'bold' }}>닫기</div>
                 </div>
               </div>
             </div>
@@ -350,7 +419,7 @@ function PopupTab() {
             style={{ flexGrow: 1, padding: '0.85rem' }}
           >
             <Save size={16} />
-            <span>모든 팝업 구성 저장</span>
+            <span>모든 팝업 구성 저장 및 웹사이트 즉시 적용</span>
           </button>
         </div>
       </div>
