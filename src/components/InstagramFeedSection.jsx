@@ -2,10 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { Heart, MessageCircle, ExternalLink, RefreshCw } from 'lucide-react';
 
 function InstagramFeedSection({ instagramToken, instagramFeedUrl, customPosts }) {
+  const [viewMode, setViewMode] = useState('grid'); // 'grid' or 'embed'
+
   const fallbackPosts = [
     {
       id: 1,
-      image: '/insta/post1.svg',
+      image: '/geummakchang_proof.jpg',
       caption: '나무꾼 햄찌가 금막창을 얻게 된 비밀 🪓✨ 전국 최초 누룩소금 숙성막창 이야기! #금막창 #나무꾼햄찌 #누룩소금막창',
       likes: 524,
       comments: 48,
@@ -13,7 +15,7 @@ function InstagramFeedSection({ instagramToken, instagramFeedUrl, customPosts })
     },
     {
       id: 2,
-      image: '/insta/post2.svg',
+      image: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=800&auto=format&fit=crop&q=80',
       caption: '📍 전국최초 누룩소금 숙성막창 금막창 대구 종로점 맑은 하늘 아래 오픈 현장! #대구막창맛집 #금막창종로점 #동성로술집',
       likes: 612,
       comments: 54,
@@ -21,7 +23,7 @@ function InstagramFeedSection({ instagramToken, instagramFeedUrl, customPosts })
     },
     {
       id: 3,
-      image: '/insta/post3.svg',
+      image: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=800&auto=format&fit=crop&q=80',
       caption: '붉은 막이 걷히며 베일을 벗은 금막창 대구 종로 본점! 웅장한 입체 간판 공개 🚁✨ #금막창 #대구핫플 #막창다이닝',
       likes: 789,
       comments: 63,
@@ -29,7 +31,7 @@ function InstagramFeedSection({ instagramToken, instagramFeedUrl, customPosts })
     },
     {
       id: 4,
-      image: '/insta/post4.svg',
+      image: 'https://images.unsplash.com/photo-1590846406792-0adc7f938f1d?w=800&auto=format&fit=crop&q=80',
       caption: '대구 종로 맛집 거리 중심에 위치한 금막창! 시원한 모퉁이 외관 전경 🏢 #대구종로맛집 #종로막창 #동성로맛집',
       likes: 495,
       comments: 37,
@@ -37,7 +39,7 @@ function InstagramFeedSection({ instagramToken, instagramFeedUrl, customPosts })
     },
     {
       id: 5,
-      image: '/insta/post5.svg',
+      image: 'https://images.unsplash.com/photo-1543007630-9710e4a00a20?w=800&auto=format&fit=crop&q=80',
       caption: '삼성팬이면 무조건! 💙 라이온즈 팬들의 유쾌하고 신나는 금막창 승리 기원 단체 회식 현장 🍻 #삼성라이온즈 #금막창회식',
       likes: 842,
       comments: 91,
@@ -45,7 +47,7 @@ function InstagramFeedSection({ instagramToken, instagramFeedUrl, customPosts })
     },
     {
       id: 6,
-      image: '/insta/post6.svg',
+      image: 'https://images.unsplash.com/photo-1544025162-d76694265947?w=800&auto=format&fit=crop&q=80',
       caption: '특허받은 누룩소금 저온숙성 공법으로 육질이 극상으로 부드러운 직화 막창 구이 ♨️ #누룩소금숙성막창 #대나무참숯초벌',
       likes: 673,
       comments: 42,
@@ -181,19 +183,56 @@ function InstagramFeedSection({ instagramToken, instagramFeedUrl, customPosts })
           <p style={subtitleStyle}>
             공식 인스타그램 <strong>@geummakchang</strong>을 팔로우하시고 금막창의 맛있는 일상과 소식을 가장 먼저 받아보세요.
           </p>
+
+          {/* Mode Switcher Buttons */}
+          <div style={{ display: 'flex', justifyContent: 'center', gap: '0.75rem', marginTop: '1.5rem' }}>
+            <button
+              onClick={() => setViewMode('grid')}
+              style={{
+                padding: '0.5rem 1.2rem',
+                borderRadius: '20px',
+                fontSize: '0.88rem',
+                fontWeight: '700',
+                border: '1px solid var(--primary-gold)',
+                backgroundColor: viewMode === 'grid' ? 'var(--primary-gold)' : 'transparent',
+                color: viewMode === 'grid' ? '#ffffff' : 'var(--text-dark)',
+                cursor: 'pointer',
+                transition: 'all 0.2s ease-in-out'
+              }}
+            >
+              📷 3x2 피드 갤러리
+            </button>
+            <button
+              onClick={() => setViewMode('embed')}
+              style={{
+                padding: '0.5rem 1.2rem',
+                borderRadius: '20px',
+                fontSize: '0.88rem',
+                fontWeight: '700',
+                border: '1px solid var(--primary-gold)',
+                backgroundColor: viewMode === 'embed' ? 'var(--primary-gold)' : 'transparent',
+                color: viewMode === 'embed' ? '#ffffff' : 'var(--text-dark)',
+                cursor: 'pointer',
+                transition: 'all 0.2s ease-in-out'
+              }}
+            >
+              🌐 인스타그램 공식 실시간 화면
+            </button>
+          </div>
         </div>
 
-        {/* 3x2 Grid */}
-        <div style={gridStyle} className="insta-grid-responsive">
-          {posts.map((post, idx) => (
-            <a
-              key={post.id || idx}
-              href={post.link || 'https://www.instagram.com/geummakchang/'}
-              target="_blank"
-              rel="noopener noreferrer"
-              style={cardStyle}
-              className="insta-card-hover"
-            >
+        {/* View Mode 1: 3x2 Grid */}
+        {viewMode === 'grid' && (
+          <div style={gridStyle} className="insta-grid-responsive">
+            {posts.map((post, idx) => (
+              <a
+                key={post.id || idx}
+                href={post.link || 'https://www.instagram.com/geummakchang/'}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={cardStyle}
+                className="insta-card-hover"
+              >
               <img src={post.image} alt="금막창 인스타그램 게시물" style={imageStyle} />
               
               {/* Dark Hover Mask */}
@@ -234,6 +273,29 @@ function InstagramFeedSection({ instagramToken, instagramFeedUrl, customPosts })
             </a>
           ))}
         </div>
+        )}
+
+        {/* View Mode 2: Official Live Instagram Screen Embed */}
+        {viewMode === 'embed' && (
+          <div style={{ marginBottom: '3rem', display: 'flex', justifyContent: 'center' }}>
+            <iframe
+              src="https://www.instagram.com/geummakchang/embed"
+              width="100%"
+              height="650"
+              frameBorder="0"
+              scrolling="no"
+              allowTransparency="true"
+              style={{
+                maxWidth: '900px',
+                borderRadius: '16px',
+                border: '1px solid var(--border-color)',
+                boxShadow: 'var(--shadow-md)',
+                backgroundColor: '#ffffff'
+              }}
+              title="Official Geum Makchang Instagram Live Feed"
+            ></iframe>
+          </div>
+        )}
 
         {/* Instagram Follow Button CTA */}
         <div style={ctaWrapperStyle}>
