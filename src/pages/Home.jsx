@@ -219,7 +219,7 @@ function Home({ openAuth, isLoggedIn, userEmail, userName, isAdmin, handleLogout
     setIsVideoLoaded(false);
     const timer = setTimeout(() => {
       setIsVideoLoaded(true);
-    }, 1400);
+    }, 2200);
     return () => clearTimeout(timer);
   }, [config?.hero?.videoUrl, config?.hero?.videoType]);
 
@@ -951,7 +951,7 @@ const videoBackgroundIframeStyle = {
   height: '56.25vw', // 16:9 Aspect Ratio
   minHeight: '100vh',
   minWidth: '177.77vh',
-  transform: 'translate(-50%, -50%) scale(1.35)',
+  transform: 'translate(-50%, -50%) scale(1.85)',
   pointerEvents: 'none',
   objectFit: 'cover'
 };
