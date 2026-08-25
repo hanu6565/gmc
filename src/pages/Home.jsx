@@ -13,6 +13,7 @@ function Home({ openAuth, isLoggedIn, userEmail, userName, isAdmin, handleLogout
   const [selectedStoreIndex, setSelectedStoreIndex] = useState(0); // Multi-store tab index
   const [reviewIndex, setReviewIndex] = useState(0); // Review slider index
   const [activeEventTab, setActiveEventTab] = useState('ongoing'); // 'ongoing' or 'ended'
+  const [selectedEventModal, setSelectedEventModal] = useState(null);
   const [indexedVideoUrl, setIndexedVideoUrl] = useState('');
   
   // Franchise form state
@@ -695,10 +696,17 @@ function Home({ openAuth, isLoggedIn, userEmail, userName, isAdmin, handleLogout
               config.events
                 .filter(e => e.status === activeEventTab)
                 .map((event) => (
-                  <div key={event.id} className="card-premium hover-gold-grow" style={eventCardStyle}>
+                  <div 
+                    key={event.id} 
+                    className="card-premium hover-gold-grow" 
+                    style={{ ...eventCardStyle, cursor: 'pointer' }}
+                    onClick={() => setSelectedEventModal(event)}
+                    title="클릭 시 상세 내용 보기"
+                  >
                     <div style={{
                       width: '100%',
-                      aspectRatio: '1 / 1',
+                      height: '210px',
+                      aspectRatio: '16 / 9',
                       position: 'relative',
                       backgroundColor: 'var(--bg-secondary)',
                       overflow: 'hidden'
@@ -811,6 +819,85 @@ function Home({ openAuth, isLoggedIn, userEmail, userName, isAdmin, handleLogout
           </div>
         </div>
       </section>
+
+      {/* Event/News Detail Modal Popup */}
+      {selectedEventModal && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          width: '100vw',
+          height: '100vh',
+          backgroundColor: 'rgba(0, 0, 0, 0.75)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 1000,
+          padding: '1.5rem',
+          backdropFilter: 'blur(5px)'
+        }}>
+          <div className="animate-fade-in" style={{
+            backgroundColor: '#ffffff',
+            borderRadius: '16px',
+            maxWidth: '560px',
+            width: '100%',
+            maxHeight: '90vh',
+            overflowY: 'auto',
+            position: 'relative',
+            boxShadow: 'var(--shadow-lg)'
+          }}>
+            <button 
+              onClick={() => setSelectedEventModal(null)}
+              style={{
+                position: 'absolute',
+                top: '1rem',
+                right: '1rem',
+                background: 'rgba(0, 0, 0, 0.5)',
+                color: '#ffffff',
+                border: 'none',
+                borderRadius: '50%',
+                width: '32px',
+                height: '32px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                cursor: 'pointer',
+                zIndex: 10
+              }}
+            >
+              ✕
+            </button>
+
+            <div style={{ width: '100%', maxHeight: '320px', overflow: 'hidden', borderTopLeftRadius: '16px', borderTopRightRadius: '16px' }}>
+              <DbImage 
+                src={selectedEventModal.image} 
+                alt={selectedEventModal.title} 
+                style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
+              />
+            </div>
+
+            <div style={{ padding: '2rem' }}>
+              <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)', fontWeight: '600', display: 'block', marginBottom: '0.5rem' }}>
+                게시 기간: {selectedEventModal.startDate} ~ {selectedEventModal.endDate}
+              </span>
+              <h3 style={{ fontSize: '1.5rem', fontWeight: '800', color: 'var(--text-dark)', marginBottom: '1rem', lineHeight: '1.3' }}>
+                {selectedEventModal.title}
+              </h3>
+              <p style={{ fontSize: '0.95rem', color: 'var(--text-muted)', lineHeight: '1.7', whiteSpace: 'pre-line' }}>
+                {selectedEventModal.desc}
+              </p>
+              
+              <button 
+                onClick={() => setSelectedEventModal(null)}
+                className="btn-gold" 
+                style={{ width: '100%', marginTop: '2rem', padding: '0.8rem' }}
+              >
+                닫기
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <Footer />
     </div>
@@ -1441,8 +1528,9 @@ const eventTabBtnStyle = {
 
 const eventGridStyle = {
   display: 'grid',
-  gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
-  gap: '2.5rem',
+  gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 360px))',
+  gap: '2rem',
+  justifyContent: 'flex-start'
 };
 
 const eventCardStyle = {
