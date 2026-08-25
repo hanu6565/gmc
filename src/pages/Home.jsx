@@ -211,6 +211,17 @@ function Home({ openAuth, isLoggedIn, userEmail, handleLogout }) {
     };
   }, [indexedVideoUrl, config]);
 
+  // Video ready state for smooth fade-in without YouTube overlay buttons
+  const [isVideoLoaded, setIsVideoLoaded] = useState(false);
+
+  useEffect(() => {
+    setIsVideoLoaded(false);
+    const timer = setTimeout(() => {
+      setIsVideoLoaded(true);
+    }, 1400);
+    return () => clearTimeout(timer);
+  }, [config?.hero?.videoUrl, config?.hero?.videoType]);
+
   // Helper to extract YouTube ID
   const getYoutubeId = useCallback((url) => {
     if (!url) return '';
@@ -296,7 +307,11 @@ function Home({ openAuth, isLoggedIn, userEmail, handleLogout }) {
       <section style={heroSectionStyle}>
         {/* Background media element */}
         {config.hero.videoType === 'youtube' && getYoutubeId(config.hero.videoUrl) ? (
-          <div style={videoBackgroundWrapperStyle}>
+          <div style={{
+            ...videoBackgroundWrapperStyle,
+            opacity: isVideoLoaded ? 1 : 0,
+            transition: 'opacity 0.8s ease-in-out'
+          }}>
             <iframe
               src={`https://www.youtube.com/embed/${getYoutubeId(config.hero.videoUrl)}?autoplay=1&mute=1&loop=1&playlist=${getYoutubeId(config.hero.videoUrl)}&controls=0&showinfo=0&rel=0&modestbranding=1&iv_load_policy=3&disablekb=1&fs=0&autohide=1&enablejsapi=1&playsinline=1`}
               frameBorder="0"
@@ -315,7 +330,11 @@ function Home({ openAuth, isLoggedIn, userEmail, handleLogout }) {
             webkit-playsinline="true"
             x5-playsinline="true"
             preload="auto"
-            style={videoBackgroundElementStyle}
+            style={{
+              ...videoBackgroundElementStyle,
+              opacity: isVideoLoaded ? 1 : 0,
+              transition: 'opacity 0.8s ease-in-out'
+            }}
             key={indexedVideoUrl || config.hero.videoUrl}
           >
             <source 
