@@ -185,7 +185,7 @@ function InstagramFeedSection({ instagramToken, instagramFeedUrl, customPosts })
           </p>
         </div>
 
-        {/* Official Live Instagram Content Container */}
+        {/* Official Live Instagram Content Container (Profile Header Cropped Off) */}
         <div style={{
           display: 'flex',
           justifyContent: 'center',
@@ -193,23 +193,33 @@ function InstagramFeedSection({ instagramToken, instagramFeedUrl, customPosts })
           marginTop: '1.5rem',
           marginBottom: '2.5rem'
         }}>
-          <iframe
-            src="https://www.instagram.com/geummakchang/embed"
-            width="100%"
-            height="720"
-            frameBorder="0"
-            scrolling="no"
-            allowTransparency="true"
-            style={{
-              maxWidth: '920px',
-              borderRadius: '20px',
-              border: '1px solid var(--border-color)',
-              boxShadow: '0 10px 30px rgba(0,0,0,0.06)',
-              backgroundColor: '#ffffff',
-              overflow: 'hidden'
-            }}
-            title="금막창 공식 인스타그램 실시간 피드"
-          ></iframe>
+          <div style={{
+            width: '100%',
+            maxWidth: '920px',
+            height: '600px',
+            overflow: 'hidden',
+            borderRadius: '20px',
+            border: '1px solid var(--border-color)',
+            boxShadow: '0 10px 30px rgba(0,0,0,0.06)',
+            backgroundColor: '#ffffff',
+            position: 'relative'
+          }}>
+            <iframe
+              src="https://www.instagram.com/geummakchang/embed"
+              width="100%"
+              height="760px"
+              frameBorder="0"
+              scrolling="no"
+              allowTransparency="true"
+              style={{
+                marginTop: '-135px',
+                border: 'none',
+                width: '100%',
+                height: '760px'
+              }}
+              title="금막창 공식 인스타그램 콘텐츠 피드"
+            ></iframe>
+          </div>
         </div>
 
         {/* Instagram Follow Button CTA */}
